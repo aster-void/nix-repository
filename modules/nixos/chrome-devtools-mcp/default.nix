@@ -6,7 +6,7 @@
 }:
 with lib; let
   cfg = config.programs.chrome-devtools-mcp;
-  chrome-devtools-mcp = pkgs.callPackage ../../packages/chrome-devtools-mcp {};
+  chrome-devtools-mcp = pkgs.callPackage ../../../packages/chrome-devtools-mcp {};
 in {
   options.programs.chrome-devtools-mcp = {
     enable = mkEnableOption "chrome-devtools-mcp";
