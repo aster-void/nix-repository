@@ -21,7 +21,7 @@
     doCheck = false; # this requires network access
 
     meta = {
-      description = "A Cargo subcommand for competitive programming";
+      description = "Cargo subcommand for competitive programming";
       longDescription = ''
         A Cargo subcommand for competitive programming.
         Supports AtCoder, Codeforces, and yukicoder. Other websites are available via online-judge-tools/api-client.
@@ -31,6 +31,7 @@
       license = lib.licenses.asl20;
       maintainers = [];
       platforms = lib.platforms.all;
+      mainProgram = "cargo-compete";
     };
   };
 in
