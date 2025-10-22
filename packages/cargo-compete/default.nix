@@ -6,10 +6,8 @@
 
     buildInputs = with pkgs; [
       openssl
-      pkg-config
     ];
     nativeBuildInputs = with pkgs; [
-      openssl
       pkg-config
     ];
 
@@ -19,7 +17,7 @@
     };
 
     cargoHash = "sha256-lid1tyR8Y6lvjpeGJ4vGzqDTY6V2y/5rL9fGyjyF3yw=";
-    doCheck = false;
+    doCheck = false; # this requires network access
   };
 in
   cargo-compete
