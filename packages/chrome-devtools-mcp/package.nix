@@ -33,5 +33,6 @@ in
       license = lib.licenses.asl20;
       maintainers = [];
       platforms = lib.platforms.linux ++ lib.platforms.darwin; # haven't tested on darwin
+      mainProgram = "chrome-devtools-mcp";
     };
   }
