@@ -1,9 +1,4 @@
-{pkgs ? import <nixpkgs> {}}: let
-  mkNixosModule = path: {
-    _class = "nixos";
-    imports = [path];
-  };
-in {
+{pkgs ? import <nixpkgs> {}}: {
   cargo-compete = import ./packages/cargo-compete {inherit pkgs;};
   fcitx5-hazkey = import ./packages/fcitx5-hazkey {inherit pkgs;};
   chrome-devtools-mcp = import ./packages/chrome-devtools-mcp {inherit pkgs;};
@@ -14,6 +9,6 @@ in {
   claude-code-usage-monitor = import ./packages/claude-code-usage-monitor {inherit pkgs;};
 
   modules = {
-    hazkey = mkNixosModule ./modules/nixos/hazkey;
+    hazkey = ./modules/nixos/hazkey;
   };
 }
