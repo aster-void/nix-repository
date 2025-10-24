@@ -1,8 +1,11 @@
 {pkgs}:
 pkgs.mkShell {
   packages = [
-    pkgs.alejandra
     pkgs.lefthook
+
+    # formatter
+    pkgs.alejandra
+    pkgs.prettier
   ];
   shellHook = ''
     lefthook install
