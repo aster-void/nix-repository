@@ -2,7 +2,7 @@
 
 The upstream project lives at <https://github.com/7ka-Hiira/fcitx5-hazkey>.
 
-## Install v0.0.9
+## Install v0.0.9 (latest release)
 
 ```nix
 {inputs, ...}: {
@@ -17,7 +17,7 @@ The upstream project lives at <https://github.com/7ka-Hiira/fcitx5-hazkey>.
 }
 ```
 
-## Install latest (unreleased)
+## Install latest git (unreleased)
 
 ```nix
 {inputs, ...}: {
