@@ -24,6 +24,8 @@ stdenv.mkDerivation (finalAttrs: {
     mv ./runtime $out/lib
   '';
   meta = {
+    description = "Helix's fork managed by gj1118";
+    homepage = "https://github.com/gj1118/helix";
     mainProgram = "hx";
   };
 })
