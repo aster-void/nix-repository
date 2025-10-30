@@ -12,18 +12,18 @@
     };
     "aarch-linux" = {
       url = "linux-arm64";
-      hash = "";
+      hash = "sha256-9VU84ek7myn1svqq0XMUXIWFTKedpnIMiAjN3StODSI=";
     };
     "x86_64-darwin" = {
       url = "darwin-x64";
-      hash = "";
+      hash = "sha256-FA4KsFOMy0s6F8pXBlA7UcgCHW7sPk1tZd/9ngkGQss=";
     };
     "aarch-darwin" = {
       url = "darwin-arm64";
-      hash = "";
+      hash = "sha256-FK4w7+vMjhL8oXDWjIZ0cmFRohxH5qdux2TBedS/VoY=";
     };
   };
-  platform = platforms.${system};
+  platform = platforms.${system} or (throw "[nix-repository:lotion-bin] system not supported: ${system}");
 in
   stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "lotion";
@@ -57,4 +57,10 @@ in
       mv ./* $out/vendor
       ln -s ../vendor/lotion $out/bin/lotion
     '';
+
+    meta = {
+      description = "Unofficial Notion.so app for Linux";
+      homepage = "https://github.com/puneetsl/lotion";
+      mainProgram = "lotion";
+    };
   })
