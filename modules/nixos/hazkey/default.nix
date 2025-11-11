@@ -18,14 +18,20 @@ in {
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    systemd.tmpfiles.rules = [
-      "d /usr/share/hazkey 0555 root root -"
-    ];
-    fileSystems."/usr/share/hazkey" = {
-      device = "${cfg.package}/share/hazkey";
-      fsType = "none";
-      options = ["bind" "ro" "x-systemd.automount" "x-systemd.idle-timeout=1min"];
+  config = lib.mkIf cfg.enable (let
+    pkg = cfg.package;
+  in {
+    systemd.user.services.hazkey-server = {
+      description = "Hazkey server";
+      wantedBy = ["default.target"];
+      serviceConfig = {
+        ExecStart = "${pkg}/bin/hazkey-server";
+        Restart = "on-failure";
+      };
+      environment = {
+        HAZKEY_DICTIONARY = "${pkg}/share/hazkey/Dictionary";
+        HAZKEY_ZENZAI_MODEL = "${pkg}/share/hazkey/zenzai.gguf";
+      };
     };
-  };
+  });
 }

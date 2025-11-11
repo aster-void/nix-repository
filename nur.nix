@@ -1,7 +1,6 @@
 {pkgs ? import <nixpkgs> {}}: {
   cargo-compete = import ./packages/cargo-compete {inherit pkgs;};
   fcitx5-hazkey = import ./packages/fcitx5-hazkey {inherit pkgs;};
-  fcitx5-hazkey-git = import ./packages/fcitx5-hazkey-git {inherit pkgs;};
   chrome-devtools-mcp = import ./packages/chrome-devtools-mcp {inherit pkgs;};
   bibata-cursors-translucent = import ./packages/bibata-cursors-translucent {inherit pkgs;};
   ccusage = import ./packages/ccusage {inherit pkgs;};
@@ -12,7 +11,7 @@
   kiri = import ./packages/kiri {inherit pkgs;};
 
   modules = {
-    hazkey = ./modules/nixos/hazkey;
-    hazkey-git = ./modules/nixos/hazkey-git;
+    hazkey-nixos = ./modules/nixos/hazkey;
+    hazkey-home = ./modules/home/hazkey;
   };
 }

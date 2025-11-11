@@ -1,33 +1,36 @@
-# Fcitx5 Hazkey
+# Fcitx5 Hazkey (v0.2.0)
 
 The upstream project lives at <https://github.com/7ka-Hiira/fcitx5-hazkey>.
 
-## Install v0.0.9 (latest release)
+## Installation
+
+Zenzai model and llama libraries are pre-bundled.
+
+### 1. Install the fcitx5 addon
 
 ```nix
-{inputs, ...}: {
-    # NixOS module
-    imports = [ inputs.nix-repository.nixosModules.hazkey ];
-    programs.hazkey.enable = true;
-
-    # at where you define your input method at (HM or NixOS)
-    i18n.inputsMethod = {
-        fcitx5.addons = [inputs.nix-repository.packages.${pkgs.system}.fcitx5-hazkey];
+{inputs, pkgs, ...}: {
+    i18n.inputMethod = {
+        enable = true;
+        type = "fcitx5";
+        fcitx5.addons = [
+            inputs.nix-repository.packages.${system}.fcitx5-hazkey
+            # other addons...
+        ];
     }
 }
 ```
 
-## Install latest git (unreleased)
+### 2. Install the hazkey server
 
 ```nix
-{inputs, ...}: {
-    # NixOS module
-    imports = [ inputs.nix-repository.nixosModules.hazkey-git ];
-    programs.hazkey-git.enable = true;
+{inputs, pkgs, ...}: {
+    # As a NixOS Module
+    imports = [ inputs.nix-repository.nixosModules.hazkey ];
+    programs.hazkey.enable = true;
 
-    # at where you define your input method at (HM or NixOS)
-    i18n.inputsMethod = {
-        fcitx5.addons = [inputs.nix-repository.packages.${pkgs.system}.fcitx5-hazkey-git];
-    }
+    # As a Home Manager Module
+    imports = [ inputs.nix-repository.homeModules.hazkey ];
+    programs.hazkey.enable = true;
 }
 ```
