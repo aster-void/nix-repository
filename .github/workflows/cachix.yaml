@@ -16,6 +16,7 @@ jobs:
       matrix:
         package:
           - helix-gj1118
+          - kiri
     steps:
       - uses: actions/checkout@v5
 
