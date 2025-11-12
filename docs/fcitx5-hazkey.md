@@ -4,6 +4,8 @@ The upstream project lives at <https://github.com/7ka-Hiira/fcitx5-hazkey>.
 
 ## Installation
 
+> The installation method assumes you have already installed this flake. see [Installation Guide](./installation.md).
+
 Zenzai model and llama libraries are pre-bundled.
 
 ### 1. Install the fcitx5 addon
