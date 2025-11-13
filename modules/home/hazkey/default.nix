@@ -4,12 +4,16 @@
   lib,
   ...
 }: let
-  cfg = config.programs.hazkey;
+  cfg = config.services.hazkey;
   fcitx5-hazkey = import ../../../packages/fcitx5-hazkey {inherit pkgs;};
 in {
   _class = "homeManager";
 
-  options.programs.hazkey = {
+  imports = [
+    (lib.mkRenamedOptionModule ["programs" "hazkey"] ["services" "hazkey"])
+  ];
+
+  options.services.hazkey = {
     enable = lib.mkEnableOption "hazkey";
     package = lib.mkOption {
       type = lib.types.package;

@@ -27,12 +27,29 @@ Zenzai model and llama libraries are pre-bundled.
 
 ```nix
 {inputs, pkgs, ...}: {
-    # As a NixOS Module
-    imports = [ inputs.nix-repository.nixosModules.hazkey ];
-    programs.hazkey.enable = true;
+    # For both NixOS and Home Manager
+    imports = [ inputs.nix-repository.nixosModules.hazkey ]; # or homeModules.hazkey
+    services.hazkey.enable = true;
+}
+```
 
-    # As a Home Manager Module
-    imports = [ inputs.nix-repository.homeModules.hazkey ];
-    programs.hazkey.enable = true;
+> **Note:** `programs.hazkey` is deprecated in favor of `services.hazkey`. Using `programs.hazkey` will still work but will show a deprecation warning.
+
+## llama.cpp Backend Selection
+
+By default, fcitx5-hazkey uses the CPU backend for llama.cpp. You can switch to the Vulkan backend for GPU acceleration.
+
+```nix
+{inputs, pkgs, ...}: let
+  fcitx5-hazkey = inputs.nix-repository.packages.${system}.fcitx5-hazkey;
+in {
+    # CPU Backend (Default)
+    services.hazkey.enable = true;
+
+    # Vulkan Backend - GPU-accelerated, requires Vulkan-capable GPU and drivers
+    services.hazkey = {
+        enable = true;
+        package = fcitx5-hazkey.override { llama = fcitx5-hazkey.llama-vulkan; };
+    };
 }
 ```
