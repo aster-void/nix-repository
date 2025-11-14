@@ -1,5 +1,5 @@
 {system}: let
-  rev = "175f2ef43bb7209c656830c1f2d007056d4e9be6";
+  rev = "aec61ce88fa0d9d0e1c6f5ebef1e222e8b97180f";
   flake = builtins.getFlake "github:gj1118/helix/${rev}";
 in
   flake.packages.${toString system}.default
