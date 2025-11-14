@@ -17,6 +17,8 @@ jobs:
         package:
           - helix-gj1118
           - kiri
+          - mcp-language-server
+          - rust-analyzer-mcp
           - v-analyzer
     steps:
       - uses: actions/checkout@v5
