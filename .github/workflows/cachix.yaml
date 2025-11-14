@@ -17,6 +17,7 @@ jobs:
         package:
           - helix-gj1118
           - kiri
+          - v-analyzer
     steps:
       - uses: actions/checkout@v5
 
