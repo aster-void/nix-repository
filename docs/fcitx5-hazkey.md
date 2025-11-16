@@ -16,7 +16,7 @@ Zenzai model and llama libraries are pre-bundled.
         enable = true;
         type = "fcitx5";
         fcitx5.addons = [
-            inputs.nix-repository.packages.${system}.fcitx5-hazkey
+            inputs.nix-repository.packages.${pkgs.system}.fcitx5-hazkey
             # other addons...
         ];
     }
@@ -41,7 +41,7 @@ By default, fcitx5-hazkey uses the CPU backend for llama.cpp. You can switch to 
 
 ```nix
 {inputs, pkgs, ...}: let
-  fcitx5-hazkey = inputs.nix-repository.packages.${system}.fcitx5-hazkey;
+  fcitx5-hazkey = inputs.nix-repository.packages.${pkgs.system}.fcitx5-hazkey;
 in {
     # CPU Backend (Default)
     services.hazkey.enable = true;
