@@ -7,7 +7,7 @@
   makeWrapper,
   runCommand,
 }: let
-  tag = "chrome-devtools-mcp-v0.10.1";
+  tag = "chrome-devtools-mcp-v0.10.2";
   unwrapped = buildNpmPackage {
     pname = "chrome-devtools-mcp-unwrapped";
     version = tag;
@@ -15,7 +15,7 @@
       owner = "ChromeDevTools";
       repo = "chrome-devtools-mcp";
       inherit tag;
-      hash = "sha256-qQFXqQicoNzwJdaCKH6Aq5oHmM7Lng9Vf/DFAvI0cgM=";
+      hash = "sha256-podneWhntzOOiD6nW5EKm4pfj7uLnlBwSQ3tR87XL5Y=";
     };
     env = {
       PUPPETEER_SKIP_DOWNLOAD = "true";
@@ -28,7 +28,7 @@
       runHook postBuild
     '';
 
-    npmDepsHash = "sha256-0Vd5pjPe6j2/awv8ZSDL4QSErtpIMgfhnXBmsWmpO6E=";
+    npmDepsHash = "sha256-Z95RGUjkzreYGjW/ZCHK2pibpMpzD3YDK7Xx3OuaB3k=";
 
     meta = {
       description = "Chrome DevTools for coding agents";
