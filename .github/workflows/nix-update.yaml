@@ -2,7 +2,7 @@ name: Auto Update
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -17,5 +17,5 @@ jobs:
       - uses: cachix/install-nix-action@v31
       - run: git -C "$root" config user.name "github-actions[bot]"
       - run: git -C "$root" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - run: nix deveelop -c ./update.sh
+      - run: nix develop -c ./update.sh
       - run: git push
