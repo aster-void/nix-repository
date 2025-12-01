@@ -13,7 +13,7 @@
   which,
   runCommand,
 }: let
-  version = "0.9.5";
+  version = "0.18.0";
   pythonEnv = python3.withPackages (ps: with ps; [ps.setuptools ps.distutils]);
   pythonSitePackages = lib.makeSearchPath "lib/python${python3.pythonVersion}/site-packages" (
     with python3.pkgs; [setuptools distutils]
@@ -37,13 +37,13 @@ in
       owner = "CAPHTECH";
       repo = "kiri";
       tag = "v${version}";
-      hash = "sha256-75lBO8NdYFPzxyMS9/G2RL6xfkwuDX3zAtOWUIH36dc=";
+      hash = "sha256-ekNfdIuxio+x2xXEjcQjs2f+cCvoXnZvEnGSVhFfhiY=";
     };
 
     pnpmDeps = pnpm.fetchDeps {
       inherit (finalAttrs) pname version src;
       fetcherVersion = 2;
-      hash = "sha256-krYMHEwSrD1pXCUJl6NYjc9lXfRrm1u9AUZs+dl6H8c=";
+      hash = "sha256-F5xKB6askniLh/OBpF5j51a+/JK2TiMS82OxetktVTo=";
     };
 
     nativeBuildInputs = [
