@@ -17,5 +17,6 @@
   modules = {
     hazkey-nixos = ./modules/nixos/hazkey;
     hazkey-home = ./modules/home/hazkey;
+    osgrep-home = ./modules/home/osgrep.nix;
   };
 }
