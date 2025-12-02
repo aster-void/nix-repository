@@ -23,9 +23,19 @@
 
     buildPhase = ''
       runHook preBuild
-      npm run prepare
-      npm run build
+      npm run bundle
       runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/lib/node_modules/chrome-devtools-mcp
+      cp -r build $out/lib/node_modules/chrome-devtools-mcp/
+      cp package.json $out/lib/node_modules/chrome-devtools-mcp/
+      chmod +x $out/lib/node_modules/chrome-devtools-mcp/build/src/index.js
+      mkdir -p $out/bin
+      ln -s $out/lib/node_modules/chrome-devtools-mcp/build/src/index.js $out/bin/chrome-devtools-mcp
+      runHook postInstall
     '';
 
     npmDepsHash = "sha256-Z95RGUjkzreYGjW/ZCHK2pibpMpzD3YDK7Xx3OuaB3k=";
@@ -40,14 +50,14 @@
     };
   };
   bwrapFlags = lib.lists.flatten [
+    ["--tmpfs" "/opt"]
+    ["--dir" "/opt/google/chrome"]
+    ["--symlink" "${lib.getExe chromium}" "/opt/google/chrome/chrome"]
     ["--ro-bind" "/" "/"]
     ["--dev-bind" "/dev" "/dev"]
     ["--proc" "/proc"]
     ["--bind" "/tmp" "/tmp"]
     ["--bind" "$HOME" "$HOME"]
-    ["--tmpfs" "/opt"]
-    ["--dir" "/opt/google/chrome"]
-    ["--symlink" "${lib.getExe chromium}" "opt/google/chrome/chrome"]
     ["--"]
     (lib.getExe unwrapped)
   ];
