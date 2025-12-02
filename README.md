@@ -31,3 +31,4 @@ Other packages are free to use as well, but I won't constantly maintain them.
 - [Installation Guide](./docs/installation.md) - How to install this flake
 - [chrome-devtools-mcp](./docs/chrome-devtools-mcp.md)
 - [fcitx5-hazkey](./docs/fcitx5-hazkey.md)
+- [osgrep](./docs/osgrep.md)
