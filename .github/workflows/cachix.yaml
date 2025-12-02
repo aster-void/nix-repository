@@ -20,6 +20,7 @@ jobs:
           - mcp-language-server
           - rust-analyzer-mcp
           - v-analyzer
+          - osgrep
     steps:
       - uses: actions/checkout@v5
 
