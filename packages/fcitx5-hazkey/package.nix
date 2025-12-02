@@ -13,6 +13,7 @@
 }: let
   version = "0.2.0";
 in
+  lib.warn "fcitx5-hazkey is deprecated. Please migrate to nix-hazkey: https://github.com/aster-void/nix-hazkey"
   stdenv.mkDerivation {
     pname = "fcitx5-hazkey";
     inherit version;

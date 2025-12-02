@@ -30,5 +30,5 @@ Other packages are free to use as well, but I won't constantly maintain them.
 
 - [Installation Guide](./docs/installation.md) - How to install this flake
 - [chrome-devtools-mcp](./docs/chrome-devtools-mcp.md)
-- [fcitx5-hazkey](./docs/fcitx5-hazkey.md)
+- [fcitx5-hazkey](./docs/fcitx5-hazkey.md) ⚠️ **DEPRECATED** - Use [nix-hazkey](https://github.com/aster-void/nix-hazkey) instead
 - [osgrep](./docs/osgrep.md)
