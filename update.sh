@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export NIX_PATH="nixpkgs=flake:nixpkgs"
+
 nix-update chrome-devtools-mcp.unwrapped -f nur.nix --commit
 nix-update ccusage -f nur.nix --commit
 nix-update ccusage-codex -f nur.nix --commit
