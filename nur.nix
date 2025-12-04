@@ -7,6 +7,7 @@
   ccusage-codex = import ./packages/ccusage-codex {inherit pkgs;};
   ccusage-mcp = import ./packages/ccusage-mcp {inherit pkgs;};
   claude-code-usage-monitor = import ./packages/claude-code-usage-monitor {inherit pkgs;};
+  gwq = import ./packages/gwq {inherit pkgs;};
   helix-gj1118 = import ./packages/helix-gj1118 {inherit pkgs;};
   helix-gj1118-bin = import ./packages/helix-gj1118-bin {inherit pkgs;};
   kiri = import ./packages/kiri {inherit pkgs;};
