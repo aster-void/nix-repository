@@ -1,21 +1,25 @@
 {
   pkgs,
-  self,
+  flake,
   system ? pkgs.system,
   ...
 }: let
   lib = pkgs.lib;
 
+  home-manager = builtins.getFlake "github:nix-community/home-manager/d441981b200305ebb8e2e2921395f51d207fded6?narHash=sha256-QCgaXEj8036JlfyVM2e5fgKIxoF7IgGRcAi8LkehKvo%3D";
+
   # Evaluate the Home Manager module to get the package it provides
-  hmConfig = lib.evalModules {
+  hmConfig = home-manager.lib.homeManagerConfiguration {
+    inherit pkgs;
     modules = [
-      self.homeModules.osgrep
+      flake.homeModules.osgrep
       {
         programs.osgrep.enable = true;
         home.stateVersion = "24.05";
+        home.username = "test";
+        home.homeDirectory = "/home/test";
       }
     ];
-    specialArgs = {inherit pkgs lib;};
   };
 
   # Extract the osgrep package from the module
