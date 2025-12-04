@@ -65,13 +65,10 @@ in
     buildPhase = ''
       runHook preBuild
 
-      export HOME=$TMPDIR
-
-      # Compile to standalone executable with Bun
-      bun build dist/index.js \
-        --target=bun \
-        --compile \
-        --outfile=context7-mcp
+      # Bundle the application with Bun
+      # We use bundling instead of compiling because bun's --compile flag
+      # has issues with argument parsing (shows Bun's help instead of app help)
+      bun build dist/index.js --outfile build/index.js --target bun --minify
 
       runHook postBuild
     '';
@@ -79,8 +76,13 @@ in
     installPhase = ''
       runHook preInstall
 
-      mkdir -p $out/bin
-      install -Dm755 context7-mcp $out/bin/context7-mcp
+      mkdir -p $out/share/context7-mcp $out/bin
+
+      cp build/index.js $out/share/context7-mcp/app.js
+      # Create a wrapper that calls 'bun <bundled-js>'
+      # This approach ensures proper argument handling and matches ccusage-codex
+      makeWrapper ${lib.getExe bun} $out/bin/context7-mcp \
+        --add-flags "$out/share/context7-mcp/app.js"
 
       runHook postInstall
     '';
