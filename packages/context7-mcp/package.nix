@@ -67,14 +67,11 @@ in
 
       export HOME=$TMPDIR
 
-      # Use 'bun build' for bundling (NOT 'bun build --compile') because:
-      # - 'bun build --compile' creates a standalone binary but shows Bun's help text
-      #   instead of running the application when invoked with --help or no arguments
-      # - Instead, we bundle to a single JS file and wrap it with Bun at runtime
-      # - This matches the approach used in other packages like ccusage-codex
+      # Compile to standalone executable with Bun
       bun build dist/index.js \
         --target=bun \
-        --outfile=build/index.js
+        --compile \
+        --outfile=context7-mcp
 
       runHook postBuild
     '';
@@ -82,12 +79,8 @@ in
     installPhase = ''
       runHook preInstall
 
-      mkdir -p $out/share/context7-mcp $out/bin
-
-      cp build/index.js $out/share/context7-mcp/app.js
-      # Create a wrapper that calls 'bun <bundled-js>' instead of a compiled binary
-      makeWrapper ${lib.getExe bun} $out/bin/context7-mcp \
-        --add-flags "$out/share/context7-mcp/app.js"
+      mkdir -p $out/bin
+      install -Dm755 context7-mcp $out/bin/context7-mcp
 
       runHook postInstall
     '';
