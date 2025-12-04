@@ -38,3 +38,7 @@ nix build .#<name> # example: nix build .#osgrep
 
 - Commit style: imperative, lowercase; scope prefix.
   - Examples: `packages: init osgrep`, `packages/osgrep: fixed XXX`, `modules: init osgrep`, `gh action: update cachix`
+
+## Nix Knowledge
+
+- You must `git add` new files so that flake can see it.
