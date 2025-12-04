@@ -1,33 +1,80 @@
 {
   lib,
-  stdenvNoCC,
+  stdenv,
   fetchurl,
+  nodejs,
+  pnpm,
   bun,
   makeWrapper,
-}:
-stdenvNoCC.mkDerivation (finalAttrs: {
-  pname = "context7-mcp";
+}: let
   version = "1.0.31";
+in
+  stdenv.mkDerivation (finalAttrs: {
+    pname = "context7-mcp";
+    inherit version;
 
-  src = fetchurl {
-    url = "https://registry.npmjs.org/@upstash/context7-mcp/-/context7-mcp-${finalAttrs.version}.tgz";
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # TODO: update hash
-  };
+    # Fetch from npm registry instead of GitHub because:
+    # - The npm package contains pre-built dist/index.js (TypeScript already compiled)
+    # - Avoids needing to build from source in a pnpm monorepo setup
+    src = fetchurl {
+      url = "https://registry.npmjs.org/@upstash/context7-mcp/-/context7-mcp-${finalAttrs.version}.tgz";
+      hash = "sha256-GW2uWkiIfEjzVuaDYZh4Son8BqXyHLtQgIzqBIek0Bc=";
+    };
 
-  # FOD for fetching Bun dependencies
-  bunDeps = stdenvNoCC.mkDerivation {
-    pname = "${finalAttrs.pname}-deps";
-    inherit (finalAttrs) version src;
+    # Use pnpm.fetchDeps instead of Bun for dependency fetching because:
+    # - Bun's --frozen-lockfile flag is unreliable (doesn't fail when lockfile is missing)
+    # - pnpm has better reproducibility guarantees with FOD (Fixed Output Derivation)
+    # - The upstream project uses pnpm, so we match their tooling
+    #
+    # We include our own pnpm-lock.yaml in the repository because:
+    # - The npm tarball doesn't include any lockfile
+    # - This ensures deterministic dependency resolution across builds
+    pnpmDeps = pnpm.fetchDeps {
+      inherit (finalAttrs) pname version;
+      # Create a source with both package.json from npm and our lockfile
+      src = stdenv.mkDerivation {
+        name = "context7-mcp-src-with-lock";
+        inherit (finalAttrs) src;
+        installPhase = ''
+          tar xzf $src
+          mkdir -p $out
+          cp -r package/* $out/
+          # Add our pre-generated pnpm-lock.yaml for reproducible builds
+          cp ${./pnpm-lock.yaml} $out/pnpm-lock.yaml
+        '';
+      };
+      fetcherVersion = 2;
+      hash = "sha256-m+MxKn9spkBmU3dNpRdV9w2F29uJwIIZmkr/b7BG4RM=";
+    };
 
-    nativeBuildInputs = [bun];
+    nativeBuildInputs = [
+      nodejs
+      pnpm.configHook
+      bun # Used for bundling only, not for dependency management
+      makeWrapper
+    ];
 
-    dontConfigure = true;
+    # Copy pnpm-lock.yaml into the main build source tree
+    # (pnpm.configHook expects it to be present for --frozen-lockfile)
+    postUnpack = ''
+      cp ${./pnpm-lock.yaml} package/pnpm-lock.yaml
+    '';
+
+    pnpmInstallFlags = ["--ignore-scripts"];
 
     buildPhase = ''
       runHook preBuild
 
       export HOME=$TMPDIR
-      bun install --frozen-lockfile --no-progress
+
+      # Use 'bun build' for bundling (NOT 'bun build --compile') because:
+      # - 'bun build --compile' creates a standalone binary but shows Bun's help text
+      #   instead of running the application when invoked with --help or no arguments
+      # - Instead, we bundle to a single JS file and wrap it with Bun at runtime
+      # - This matches the approach used in other packages like ccusage-codex
+      bun build dist/index.js \
+        --target=bun \
+        --outfile=build/index.js
 
       runHook postBuild
     '';
@@ -35,61 +82,22 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     installPhase = ''
       runHook preInstall
 
-      mkdir -p $out
-      cp -r node_modules $out/
+      mkdir -p $out/share/context7-mcp $out/bin
+
+      cp build/index.js $out/share/context7-mcp/app.js
+      # Create a wrapper that calls 'bun <bundled-js>' instead of a compiled binary
+      makeWrapper ${lib.getExe bun} $out/bin/context7-mcp \
+        --add-flags "$out/share/context7-mcp/app.js"
 
       runHook postInstall
     '';
 
-    outputHashMode = "recursive";
-    outputHashAlgo = "sha256";
-    outputHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # TODO: update hash
-  };
-
-  nativeBuildInputs = [
-    bun
-    makeWrapper
-  ];
-
-  unpackPhase = ''
-    runHook preUnpack
-
-    tar xzf $src
-    cd package
-
-    runHook postUnpack
-  '';
-
-  buildPhase = ''
-    runHook preBuild
-
-    export HOME=$TMPDIR
-    ln -s ${finalAttrs.bunDeps}/node_modules node_modules
-
-    # Compile to standalone executable
-    bun build node_modules/.bin/context7-mcp \
-      --target=bun \
-      --compile \
-      --outfile=context7-mcp
-
-    runHook postBuild
-  '';
-
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p $out/bin
-    install -Dm755 context7-mcp $out/bin/context7-mcp
-
-    runHook postInstall
-  '';
-
-  meta = {
-    description = "Context7 MCP Server - Up-to-date code documentation for LLMs and AI code editors";
-    homepage = "https://github.com/upstash/context7";
-    license = lib.licenses.mit;
-    maintainers = [];
-    platforms = lib.platforms.linux ++ lib.platforms.darwin;
-    mainProgram = "context7-mcp";
-  };
-})
+    meta = {
+      description = "Context7 MCP Server - Up-to-date code documentation for LLMs and AI code editors";
+      homepage = "https://github.com/upstash/context7";
+      license = lib.licenses.mit;
+      maintainers = [];
+      platforms = lib.platforms.linux ++ lib.platforms.darwin;
+      mainProgram = "context7-mcp";
+    };
+  })
