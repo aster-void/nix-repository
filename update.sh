@@ -14,7 +14,7 @@ update_package() {
 
   echo "=== Updating $nix_attr ==="
 
-  if ! nix-update "$nix_attr" -f nur.nix --commit; then
+  if ! nix-update "$nix_attr" --flake --commit; then
     echo "WARNING: nix-update failed for $nix_attr, skipping"
     return 0
   fi
@@ -90,4 +90,5 @@ update_package ccusage-mcp
 update_package claude-code-usage-monitor
 update_package kiri
 update_package osgrep
+update_package climcp
 update_helix
