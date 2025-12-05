@@ -6,7 +6,6 @@
   - `flake.nix` / `flake.lock`: flake entry + pins
   - `packages/<name>/{default.nix,package.nix}`: per‑package definitions
   - `modules/{home,nixos}/*.nix`: Home Manager/NixOS modules
-  - `nur.nix`: maintained package/module index
   - `docs/`: user docs; update when behavior changes
 
 ## Scripts
