@@ -50,14 +50,14 @@
     };
   };
   bwrapFlags = lib.lists.flatten [
-    ["--tmpfs" "/opt"]
-    ["--dir" "/opt/google/chrome"]
-    ["--symlink" "${lib.getExe chromium}" "/opt/google/chrome/chrome"]
     ["--ro-bind" "/" "/"]
     ["--dev-bind" "/dev" "/dev"]
     ["--proc" "/proc"]
     ["--bind" "/tmp" "/tmp"]
     ["--bind" "$HOME" "$HOME"]
+    ["--tmpfs" "/opt"]
+    ["--dir" "/opt/google/chrome"]
+    ["--symlink" "${lib.getExe chromium}" "/opt/google/chrome/chrome"]
     ["--"]
     (lib.getExe unwrapped)
   ];
