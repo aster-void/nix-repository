@@ -10,7 +10,7 @@ echo "Fetching latest commit from gj1118/helix..."
 LATEST_REV=$(curl -s "https://api.github.com/repos/gj1118/helix/commits/master" | jq -r '.sha')
 
 if [ -z "$LATEST_REV" ] || [ "$LATEST_REV" = "null" ]; then
-  echo "Error: Failed to fetch latest commit hash"
+  echo "Error: Failed to fetch latest commit hash" >&2
   exit 1
 fi
 
@@ -34,10 +34,3 @@ echo "Formatting with nix fmt..."
 nix fmt "$PACKAGE_FILE" 2>/dev/null || true
 
 echo "Updated helix-gj1118 from $CURRENT_REV to $LATEST_REV"
-
-# If --commit flag is passed, create a git commit
-if [ "${1:-}" = "--commit" ]; then
-  cd "$SCRIPT_DIR/../.."
-  git add "$PACKAGE_FILE"
-  git commit -m "packages: helix-gj1118: update" || echo "Nothing to commit"
-fi
