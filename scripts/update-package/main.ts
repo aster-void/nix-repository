@@ -152,6 +152,9 @@ async function main(): Promise<void> {
     Deno.exit(1);
   }
 
+  // Stage changes so nix flake can see updated files
+  await run(["git", "add", "-A"]);
+
   const newVersion = await getVersion(buildAttr);
   console.log(`New version: ${newVersion}`);
 
