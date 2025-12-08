@@ -7,12 +7,12 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "climcp";
-  version = "0.0.6";
+  version = "0.0.7";
 
   # Fetch from npm registry - contains pre-built bundled index.js
   src = fetchurl {
     url = "https://registry.npmjs.org/climcp/-/climcp-${finalAttrs.version}.tgz";
-    hash = "sha256-MDOShlkR9ncT0RAEE9kRcRjWh1Mf08QUKxMvQDwEmD0=";
+    hash = "sha256-quPuYd7rcFS69aAYwA+1VHshHudwS6RhfYVsMwJebkw=";
   };
 
   nativeBuildInputs = [makeWrapper];
