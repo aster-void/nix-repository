@@ -141,7 +141,12 @@ async function main(): Promise<void> {
   const updateSuccess = await (async () => {
     switch (method) {
       case "nix-update":
-        return await runPassthrough(["nix-update", nixAttr, "--flake"]);
+        return await runPassthrough([
+          "nix-update",
+          nixAttr,
+          "--flake",
+          "--commit",
+        ]);
       case "custom":
         return await runPassthrough([`./packages/${packageName}/update.sh`]);
     }

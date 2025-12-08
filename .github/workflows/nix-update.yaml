@@ -64,7 +64,6 @@ jobs:
           branch: update/${{ matrix.package }}
           delete-branch: true
           title: "packages/${{ matrix.package }}: ${{ steps.update.outputs.old_version }} -> ${{ steps.update.outputs.new_version }}"
-          commit-message: "packages/${{ matrix.package }}: ${{ steps.update.outputs.old_version }} -> ${{ steps.update.outputs.new_version }}"
           body: |
             Automated update for `${{ matrix.package }}`
 
