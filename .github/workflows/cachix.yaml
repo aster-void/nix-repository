@@ -15,16 +15,22 @@ jobs:
     strategy:
       matrix:
         package:
+          - cargo-compete
           - ccusage
           - ccusage-codex
           - ccusage-mcp
           - chrome-devtools-mcp
+          - claude-flow
+          - gwq
           - helix-gj1118
           - kiri
+          - lsmcp
           - mcp-language-server
-          - rust-analyzer-mcp
-          - v-analyzer
+          - mcptools
           - osgrep
+          - rust-analyzer-mcp
+          - ruv-swarm
+          - v-analyzer
     steps:
       - uses: actions/checkout@v5
         with:
