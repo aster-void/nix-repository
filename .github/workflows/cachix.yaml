@@ -47,6 +47,22 @@ jobs:
         with:
           name: nix-repository--aster-void
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          pushFilter: '(-source$|\.tar\.gz$|\.xz$|\.zip$)'
       - name: Build ${{ matrix.package }}
         if: github.event_name == 'workflow_dispatch' || steps.filter.outputs.build == 'true'
         run: nix build .#${{ matrix.package }} --print-build-logs
+      - name: Push to Cachix (if under 50MB)
+        if: github.event_name == 'workflow_dispatch' || steps.filter.outputs.build == 'true'
+        run: |
+          set -euo pipefail
+          MAX_SIZE=$((50 * 1024 * 1024))  # 50MB in bytes
+          STORE_PATH=$(nix path-info .#${{ matrix.package }})
+          CLOSURE_SIZE=$(nix path-info --closure-size "$STORE_PATH" | awk '{print $2}')
+          echo "Package: ${{ matrix.package }}"
+          echo "Closure size: $((CLOSURE_SIZE / 1024 / 1024))MB ($CLOSURE_SIZE bytes)"
+          if [ "$CLOSURE_SIZE" -le "$MAX_SIZE" ]; then
+            echo "✓ Under 50MB limit, pushing to cachix..."
+            nix path-info --recursive "$STORE_PATH" | cachix push nix-repository--aster-void
+          else
+            echo "✗ Exceeds 50MB limit, skipping cachix push"
+          fi
