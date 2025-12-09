@@ -15,6 +15,10 @@ jobs:
     strategy:
       matrix:
         package:
+          - ccusage
+          - ccusage-codex
+          - ccusage-mcp
+          - chrome-devtools-mcp
           - helix-gj1118
           - kiri
           - mcp-language-server
