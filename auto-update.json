@@ -18,9 +18,6 @@
       "name": "claude-code-usage-monitor"
     },
     {
-      "name": "climcp"
-    },
-    {
       "name": "helix-gj1118",
       "method": "custom"
     },
