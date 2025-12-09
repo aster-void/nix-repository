@@ -1,13 +1,16 @@
 {
   lib,
-  rustPlatform,
+  stdenv,
   fetchFromGitHub,
+  nodejs,
+  pnpm,
+  python3,
+  jq,
   pkg-config,
-  openssl,
 }:
-rustPlatform.buildRustPackage rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "ruv-swarm";
-  version = "1.0.5";
+  version = "1.0.18";
 
   src = fetchFromGitHub {
     owner = "ruvnet";
@@ -16,27 +19,87 @@ rustPlatform.buildRustPackage rec {
     hash = "sha256-AA09Osu0ndTSLiyQae1IVII82twMttIMBksKZe7RwmI=";
   };
 
-  sourceRoot = "${src.name}/ruv-swarm";
+  sourceRoot = "${finalAttrs.src.name}/ruv-swarm/npm";
 
-  cargoHash = "sha256-uqcvD1HyZr7FXVsvhkywrKLqIk97NkoeVAqjG+GwiEQ=";
+  pnpmDeps = pnpm.fetchDeps {
+    inherit (finalAttrs) pname version src sourceRoot;
+    fetcherVersion = 2;
+    hash = "sha256-fBNtHtFj7tYWF8mnIEGN5q66GMd9546WkFC54yFULp0=";
+    # Use our generated pnpm-lock.yaml and remove optionalDependencies
+    postPatch = ''
+      ${lib.getExe jq} 'del(.optionalDependencies)' package.json > package.json.tmp
+      mv package.json.tmp package.json
+      cp ${./pnpm-lock.yaml} pnpm-lock.yaml
+    '';
+  };
 
-  cargoBuildFlags = ["-p" "ruv-swarm-cli"];
-  cargoTestFlags = ["-p" "ruv-swarm-cli"];
+  nativeBuildInputs = [
+    nodejs
+    pnpm
+    pnpm.configHook
+    (python3.withPackages (ps: [ps.setuptools])) # for better-sqlite3 node-gyp
+    pkg-config
+  ];
 
-  nativeBuildInputs = [pkg-config];
-  buildInputs = [openssl];
+  # Use local node headers instead of downloading
+  npm_config_nodedir = nodejs;
 
-  doCheck = false;
+  preConfigure = ''
+    ${lib.getExe jq} 'del(.optionalDependencies)' package.json > package.json.tmp
+    mv package.json.tmp package.json
+    cp ${./pnpm-lock.yaml} pnpm-lock.yaml
+  '';
+
+  # Patch persistence files to use RUV_SWARM_DATA_DIR environment variable
+  postPatch = ''
+    substituteInPlace src/persistence-pooled.js \
+      --replace-fail \
+        "constructor(dbPath = path.join(new URL('.', import.meta.url).pathname, '..', 'data', 'ruv-swarm.db')" \
+        "constructor(dbPath = path.join(process.env.RUV_SWARM_DATA_DIR || path.join(new URL('.', import.meta.url).pathname, '..', 'data'), 'ruv-swarm.db')"
+    substituteInPlace src/persistence.js \
+      --replace-fail \
+        "constructor(dbPath = path.join(new URL('.', import.meta.url).pathname, '..', 'data', 'ruv-swarm.db'))" \
+        "constructor(dbPath = path.join(process.env.RUV_SWARM_DATA_DIR || path.join(new URL('.', import.meta.url).pathname, '..', 'data'), 'ruv-swarm.db'))"
+  '';
+
+  # Rebuild native modules (better-sqlite3 requires node-gyp build)
+  buildPhase = ''
+    runHook preBuild
+
+    # Find and build better-sqlite3 native module
+    pushd node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3
+    npm run build-release
+    popd
+
+    runHook postBuild
+  '';
+
+  installPhase = ''
+        runHook preInstall
+
+        mkdir -p $out/libexec/ruv-swarm $out/bin
+        cp -r bin src node_modules package.json $out/libexec/ruv-swarm/
+
+        cat > $out/bin/ruv-swarm << 'EOF'
+    #!/usr/bin/env bash
+    export RUV_SWARM_DATA_DIR="''${RUV_SWARM_DATA_DIR:-''${XDG_DATA_HOME:-$HOME/.local/share}/ruv-swarm}"
+    EOF
+        echo "exec ${lib.getExe nodejs} $out/libexec/ruv-swarm/bin/ruv-swarm-secure.js \"\$@\"" >> $out/bin/ruv-swarm
+        chmod +x $out/bin/ruv-swarm
+
+        runHook postInstall
+  '';
 
   meta = {
-    description = "Distributed swarm orchestration CLI with cognitive diversity";
+    description = "Distributed swarm orchestration CLI with MCP support";
     longDescription = ''
-      ruv-swarm is a lightweight neural network orchestration system built in Rust.
-      It instantly deploys purpose-built "brains" specialized for specific tasks.
+      ruv-swarm is a swarm orchestration system that provides native
+      integration with Claude Code through the Model Context Protocol (MCP).
+      Features include swarm initialization, agent spawning, and task orchestration.
     '';
     homepage = "https://github.com/ruvnet/ruv-FANN";
     license = with lib.licenses; [mit asl20];
     maintainers = [];
     mainProgram = "ruv-swarm";
   };
-}
+})
