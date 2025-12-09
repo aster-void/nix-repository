@@ -43,12 +43,13 @@ buildNpmPackage {
 
     mkdir -p $out/share/claude-flow $out/bin
 
-    cp -r dist dist-cjs node_modules package.json bin $out/share/claude-flow/
+    # Copy all necessary files including src for sourcemap resolution
+    cp -r dist dist-cjs node_modules package.json bin scripts src $out/share/claude-flow/
 
     makeWrapper ${lib.getExe nodejs} $out/bin/claude-flow \
       --add-flags "$out/share/claude-flow/dist/src/cli/main.js" \
       --set NODE_ENV production \
-      --chdir "$out/share/claude-flow"
+      --set NODE_PATH "$out/share/claude-flow/node_modules"
 
     runHook postInstall
   '';
