@@ -32,5 +32,4 @@ Packages may be removed without a deprecation period if they become available in
 
 - [Installation Guide](./docs/installation.md) - How to install this flake
 - [chrome-devtools-mcp](./docs/chrome-devtools-mcp.md)
-- [fcitx5-hazkey](./docs/fcitx5-hazkey.md) ⚠️ **DEPRECATED** - Use [nix-hazkey](https://github.com/aster-void/nix-hazkey) instead
 - [osgrep](./docs/osgrep.md)
