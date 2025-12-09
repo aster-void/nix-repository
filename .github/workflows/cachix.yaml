@@ -8,29 +8,24 @@ on:
   workflow_dispatch:
 
 jobs:
+  matrix:
+    name: Build Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.set-matrix.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: set-matrix
+        run: echo "packages=$(cat packages.json)" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build ${{ matrix.package }}
+    needs: matrix
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       matrix:
-        package:
-          - cargo-compete
-          - ccusage
-          - ccusage-codex
-          - ccusage-mcp
-          - chrome-devtools-mcp
-          - claude-flow
-          - gwq
-          - helix-gj1118
-          - kiri
-          - lsmcp
-          - mcp-language-server
-          - mcptools
-          - osgrep
-          - rust-analyzer-mcp
-          - ruv-swarm
-          - v-analyzer
+        package: ${{ fromJson(needs.matrix.outputs.packages) }}
     steps:
       - uses: actions/checkout@v5
         with:

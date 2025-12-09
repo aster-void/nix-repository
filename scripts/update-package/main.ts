@@ -5,28 +5,14 @@
  *
  * Usage: deno run --allow-all scripts/update-package/main.ts <package-name>
  *
+ * Update method:
+ *   - If packages/<name>/update.sh exists, run it
+ *   - Otherwise, run nix-update
+ *
  * Exit codes:
  *   0 - Success (update applied or already up-to-date)
  *   1 - Error (update or build failed)
  */
-
-import { z } from "npm:zod@3.24.1";
-
-const UpdateMethod = z.enum(["nix-update", "custom"]);
-
-const PackageConfig = z.object({
-  name: z.string().min(1),
-  nixAttr: z.string().optional(),
-  buildAttr: z.string().optional(),
-  method: UpdateMethod.optional(),
-});
-
-const AutoUpdateConfig = z.object({
-  packages: z.array(PackageConfig).min(1),
-});
-
-type PackageConfig = z.infer<typeof PackageConfig>;
-type AutoUpdateConfig = z.infer<typeof AutoUpdateConfig>;
 
 async function run(
   cmd: string[],
@@ -74,33 +60,13 @@ function output(key: string, value: string): void {
   }
 }
 
-function loadConfig(configPath: string): AutoUpdateConfig {
-  const raw = Deno.readTextFileSync(configPath);
-  const json: unknown = JSON.parse(raw);
-  const result = AutoUpdateConfig.safeParse(json);
-
-  if (!result.success) {
-    console.error("ERROR: Invalid auto-update.json:");
-    for (const issue of result.error.issues) {
-      console.error(`  - ${issue.path.join(".")}: ${issue.message}`);
-    }
-    Deno.exit(1);
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    const stat = await Deno.stat(path);
+    return stat.isFile;
+  } catch {
+    return false;
   }
-
-  return result.data;
-}
-
-function findPackage(config: AutoUpdateConfig, name: string): PackageConfig {
-  const pkg = config.packages.find((p: PackageConfig) => p.name === name);
-  if (!pkg) {
-    console.error(`ERROR: Package "${name}" not found in auto-update.json`);
-    console.error("Available packages:");
-    for (const p of config.packages) {
-      console.error(`  - ${p.name}`);
-    }
-    Deno.exit(1);
-  }
-  return pkg;
 }
 
 async function main(): Promise<void> {
@@ -116,36 +82,19 @@ async function main(): Promise<void> {
 
   Deno.env.set("NIX_PATH", "nixpkgs=flake:nixpkgs");
 
-  const configPath = `${repoRoot}/auto-update.json`;
-  const config = loadConfig(configPath);
-  const pkg = findPackage(config, packageName);
-
-  const nixAttr = pkg.nixAttr ?? packageName;
-  const buildAttr = pkg.buildAttr ?? packageName;
-  const method = pkg.method ?? "nix-update";
+  const updateScript = `./packages/${packageName}/update.sh`;
+  const hasCustomUpdate = await fileExists(updateScript);
 
   console.log(`=== Updating ${packageName} ===`);
-  console.log(`nixAttr: ${nixAttr}`);
-  console.log(`buildAttr: ${buildAttr}`);
-  console.log(`method: ${method}`);
+  console.log(`method: ${hasCustomUpdate ? "custom" : "nix-update"}`);
 
-  const oldVersion = await getVersion(buildAttr);
+  const oldVersion = await getVersion(packageName);
   console.log(`Current version: ${oldVersion}`);
 
   // Run update
-  const updateSuccess = await (async () => {
-    switch (method) {
-      case "nix-update":
-        return await runPassthrough([
-          "nix-update",
-          nixAttr,
-          "--flake",
-          "--commit",
-        ]);
-      case "custom":
-        return await runPassthrough([`./packages/${packageName}/update.sh`]);
-    }
-  })();
+  const updateSuccess = hasCustomUpdate
+    ? await runPassthrough([updateScript])
+    : await runPassthrough(["nix-update", packageName, "--flake", "--commit"]);
 
   if (!updateSuccess) {
     console.error(`ERROR: Update failed for ${packageName}`);
@@ -155,7 +104,7 @@ async function main(): Promise<void> {
   // Stage changes so nix flake can see updated files
   await run(["git", "add", "-A"]);
 
-  const newVersion = await getVersion(buildAttr);
+  const newVersion = await getVersion(packageName);
   console.log(`New version: ${newVersion}`);
 
   if (oldVersion !== newVersion) {
@@ -164,32 +113,27 @@ async function main(): Promise<void> {
     output("new_version", newVersion);
 
     // Build and verify
-    console.log(`Building ${buildAttr}...`);
+    console.log(`Building ${packageName}...`);
     if (
       !(await runPassthrough([
         "nix",
         "build",
-        `.#${buildAttr}`,
+        `.#${packageName}`,
         "--print-build-logs",
       ]))
     ) {
-      console.error(`ERROR: Build failed for ${buildAttr}`);
+      console.error(`ERROR: Build failed for ${packageName}`);
       Deno.exit(1);
     }
 
     // Run per-package check script if exists
-    const checkScript = `./packages/${buildAttr}/check.sh`;
-    try {
-      const stat = await Deno.stat(checkScript);
-      if (stat.isFile) {
-        console.log(`Running check script for ${buildAttr}...`);
-        if (!(await runPassthrough([checkScript]))) {
-          console.error(`ERROR: Check failed for ${buildAttr}`);
-          Deno.exit(1);
-        }
+    const checkScript = `./packages/${packageName}/check.sh`;
+    if (await fileExists(checkScript)) {
+      console.log(`Running check script for ${packageName}...`);
+      if (!(await runPassthrough([checkScript]))) {
+        console.error(`ERROR: Check failed for ${packageName}`);
+        Deno.exit(1);
       }
-    } catch {
-      // check.sh doesn't exist, skip
     }
 
     console.log(
