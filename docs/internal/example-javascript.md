@@ -11,7 +11,7 @@ Best for simple npm projects with standard build scripts.
   buildNpmPackage,
   fetchFromGitHub,
 }:
-buildNpmPackage rec {
+buildNpmPackage (finalAttrs: {
   pname = "my-npm-app";
   version = "1.0.0";
 
@@ -35,9 +35,9 @@ buildNpmPackage rec {
 
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/lib/node_modules/${pname} $out/bin
-    cp -r dist package.json $out/lib/node_modules/${pname}/
-    ln -s $out/lib/node_modules/${pname}/dist/index.js $out/bin/${pname}
+    mkdir -p $out/share/my-npm-app/node_modules/${pname} $out/bin
+    cp -r dist package.json $out/share/my-npm-app/node_modules/${pname}/
+    ln -s $out/share/my-npm-app/node_modules/${pname}/dist/index.js $out/bin/${pname}
     runHook postInstall
   '';
 
@@ -47,8 +47,9 @@ buildNpmPackage rec {
     license = lib.licenses.mit;
     maintainers = [];
     mainProgram = "my-npm-app";
+    # see ./example-meta.md for more
   };
-}
+})
 ```
 
 ## pnpm (stdenv + pnpm.fetchDeps)
@@ -183,13 +184,63 @@ stdenv.mkDerivation (finalAttrs: {
 })
 ```
 
+## Prebuilt from npm (less preferred)
+
+When source build is not feasible, download prebuilt package directly from npm registry.
+Avoid this approach when possible - prefer building from source.
+
+```nix
+# packages/my-prebuilt-app/package.nix
+{
+  lib,
+  stdenvNoCC,
+  fetchurl,
+  nodejs,
+  makeBinaryWrapper,
+}:
+stdenvNoCC.mkDerivation (finalAttrs: {
+  pname = "my-prebuilt-app";
+  version = "1.0.0";
+
+  src = fetchurl {
+    url = "https://registry.npmjs.org/my-prebuilt-app/-/my-prebuilt-app-${finalAttrs.version}.tgz";
+    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  };
+
+  sourceRoot = ".";
+
+  nativeBuildInputs = [ makeBinaryWrapper ];
+
+  installPhase = ''
+    runHook preInstall
+
+    mkdir -p $out/share/my-prebuilt-app $out/bin
+    cp -r package/* $out/share/my-prebuilt-app/
+
+    makeWrapper ${lib.getExe nodejs} $out/bin/my-prebuilt-app \
+      --add-flags "$out/share/my-prebuilt-app/dist/index.js"
+
+    runHook postInstall
+  '';
+
+  meta = {
+    description = "Short description";
+    homepage = "https://www.npmjs.com/package/my-prebuilt-app";
+    license = lib.licenses.mit;
+    maintainers = [];
+    mainProgram = "my-prebuilt-app";
+  };
+})
+```
+
 ## Comparison
 
-| Method            | Use Case                        | Pros                                    | Cons                 |
-| ----------------- | ------------------------------- | --------------------------------------- | -------------------- |
-| `buildNpmPackage` | Standard npm projects           | Simple, official                        | Less flexible        |
-| pnpm + stdenv     | pnpm projects, complex builds   | Full control, works with pnpm lockfiles | More verbose         |
-| bun build         | TypeScript, single-file bundles | Fast builds, small output               | Requires bun runtime |
+| Method            | Use Case                        | Pros                                    | Cons                          |
+| ----------------- | ------------------------------- | --------------------------------------- | ----------------------------- |
+| `buildNpmPackage` | Standard npm projects           | Simple, official                        | Less flexible                 |
+| pnpm + stdenv     | pnpm projects, complex builds   | Full control, works with pnpm lockfiles | More verbose                  |
+| bun build         | TypeScript, single-file bundles | Fast builds, small output               | Requires bun runtime          |
+| Prebuilt from npm | Last resort                     | No build step needed                    | Not reproducible, less secure |
 
 ## Getting Hashes
 
