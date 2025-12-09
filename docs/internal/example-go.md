@@ -9,7 +9,7 @@
   buildGoModule,
   fetchFromGitHub,
 }:
-buildGoModule rec {
+buildGoModule (finalAttrs: {
   pname = "my-go-app";
   version = "1.0.0";
 
@@ -37,27 +37,28 @@ buildGoModule rec {
     license = lib.licenses.mit;
     maintainers = [];
     mainProgram = "my-go-app";
+    # see ./example-meta.md for more
   };
-}
+})
 ```
 
 ## Key Attributes
 
-| Attribute     | Description                                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------------------------------ |
-| `vendorHash`  | Hash of vendored dependencies. Use `lib.fakeHash` initially, then replace with actual hash from build error. |
-| `subPackages` | List of Go packages to build (relative to `src`). Useful for monorepos.                                      |
-| `ldflags`     | Linker flags. `-s -w` strips debug info.                                                                     |
-| `doCheck`     | Set to `false` if tests require network access.                                                              |
+| Attribute     | Description                                                                                                       |
+| ------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `vendorHash`  | Hash of vendored dependencies. Use fake hash (e.g. "") initially, then replace with actual hash from build error. |
+| `subPackages` | List of Go packages to build (relative to `src`). Useful for monorepos.                                           |
+| `ldflags`     | Linker flags. `-s -w` strips debug info.                                                                          |
+| `doCheck`     | Set to `false` if tests require network access.                                                                   |
 
 ## Getting Hashes
 
 1. Set `hash` and `vendorHash` to placeholder:
 
-   ```nix
-   hash = lib.fakeHash;
-   vendorHash = lib.fakeHash;
-   ```
+```nix
+hash = ""; # or sha256-AAAAA...A=
+vendorHash = ""; # or sha256-BBBB..B=
+```
 
 2. Run `nix build .#my-go-app` and copy the correct hashes from error messages.
 

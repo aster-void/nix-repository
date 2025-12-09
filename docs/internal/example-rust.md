@@ -36,8 +36,8 @@ rustPlatform.buildRustPackage rec {
     homepage = "https://github.com/owner/my-rust-app";
     license = lib.licenses.mit;
     maintainers = [];
-    platforms = lib.platforms.all;
     mainProgram = "my-rust-app";
+    # see ./example-meta.md for more
   };
 }
 ```
