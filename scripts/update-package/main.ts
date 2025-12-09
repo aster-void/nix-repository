@@ -65,11 +65,6 @@ async function getVersion(attr: string): Promise<string> {
   return success ? output.trim() : "unknown";
 }
 
-async function hasChanges(): Promise<boolean> {
-  const { success } = await run(["git", "diff", "--quiet"]);
-  return !success;
-}
-
 function output(key: string, value: string): void {
   console.log(`${key}=${value}`);
 
@@ -163,7 +158,7 @@ async function main(): Promise<void> {
   const newVersion = await getVersion(buildAttr);
   console.log(`New version: ${newVersion}`);
 
-  if (await hasChanges()) {
+  if (oldVersion !== newVersion) {
     output("updated", "true");
     output("old_version", oldVersion);
     output("new_version", newVersion);
