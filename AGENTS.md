@@ -2,11 +2,20 @@
 
 ## Project Structure & Module Organization
 
-- Nix flake repo. Key paths:
-  - `flake.nix` / `flake.lock`: flake entry + pins
-  - `packages/<name>/{default.nix,package.nix}`: per‑package definitions
-  - `modules/{home,nixos}/*.nix`: Home Manager/NixOS modules
-  - `docs/`: user docs; update when behavior changes
+```
+.
+├── flake.nix          # flake entry
+├── flake.lock         # dependency pins
+├── AGENTS.md          # AI agent instructions
+├── packages/
+│   └── <name>/
+│       ├── default.nix   # thin wrapper
+│       └── package.nix   # build logic
+├── modules/
+│   ├── home/*.nix     # Home Manager modules
+│   └── nixos/*.nix    # NixOS modules
+└── docs/              # user docs; update when behavior changes
+```
 
 ## Scripts
 
@@ -41,3 +50,9 @@ nix build .#<name> # example: nix build .#osgrep
 ## Nix Knowledge
 
 - You must `git add` new files so that flake can see it.
+
+## Packaging Examples
+
+- [Go](docs/internal/example-go.md) - `buildGoModule`
+- [Rust](docs/internal/example-rust.md) - `buildRustPackage`
+- [JavaScript](docs/internal/example-javascript.md) - npm, pnpm, bun
