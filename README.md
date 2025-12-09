@@ -26,6 +26,8 @@ I will maintain packages / modules that are listed in `./nur.nix`.
 
 Other packages are free to use as well, but I won't constantly maintain them.
 
+Packages may be removed without a deprecation period if they become available in nixpkgs or other repositories.
+
 ## Docs
 
 - [Installation Guide](./docs/installation.md) - How to install this flake
