@@ -6,7 +6,7 @@
   pnpm,
   makeBinaryWrapper,
 }: let
-  version = "0.4.15";
+  version = "0.5.16";
 in
   stdenv.mkDerivation (finalAttrs: {
     pname = "osgrep";
@@ -17,13 +17,13 @@ in
       owner = "Ryandonofrio3";
       repo = "osgrep";
       rev = "v${version}";
-      hash = "sha256-vMPeCK7FnL6ye9syLqDvA18+6loNC1i/PLMkuhJVIww=";
+      hash = "sha256-Bpk4n1G0e2TptarYxr6N4GSXDMC6Es/cg59v0HZBhIA=";
     };
 
     pnpmDeps = pnpm.fetchDeps {
       inherit (finalAttrs) pname version src;
       fetcherVersion = 2;
-      hash = "sha256-XX+cD2ove73gHHoCaHzpk+iQ6JnQf3R8EnlT+cr6XYE=";
+      hash = "sha256-sSRRhxHcoDpVTbnsvg6rM3GQ5l7nGaMmyFmwlPNXzBo=";
     };
 
     nativeBuildInputs = [
