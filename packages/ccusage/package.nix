@@ -7,7 +7,7 @@
   makeBinaryWrapper,
   lib,
 }: let
-  version = "17.1.6";
+  version = "17.1.8";
 in
   stdenv.mkDerivation (finalAttrs: {
     pname = "ccusage";
@@ -17,13 +17,13 @@ in
       owner = "ryoppippi";
       repo = "ccusage";
       tag = "v${version}";
-      hash = "sha256-aC7AYaTTLzYHhPP9sttcNxqVDFf/WjFq8pFF7UTslJ0=";
+      hash = "sha256-FFf3jHvsf+fwaTUxPNuiQ9pcKznwp6Ps5nXqQEXpj5Y=";
     };
 
     pnpmDeps = pnpm.fetchDeps {
       inherit (finalAttrs) pname version src;
       fetcherVersion = 2;
-      hash = "sha256-WXHDcYtDSGcAscXJg8sXLT5miqjIndNcF8Z6RZUluy8=";
+      hash = "sha256-gzbFBw49KManquZenI2/3QkwHCOJWx7ivqNe58GQdg8=";
     };
 
     nativeBuildInputs = [
