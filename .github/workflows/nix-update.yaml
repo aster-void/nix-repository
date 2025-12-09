@@ -53,6 +53,11 @@ jobs:
           name: nix-repository--aster-void
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Run update
         id: update
         run: nix develop -c ./scripts/update-package.sh "${{ matrix.package }}"
