@@ -34,13 +34,16 @@ nix build .#<name> # example: nix build .#osgrep
 
 - Naming: directories/attrs use kebab‑case (e.g., `osgrep`); keep `default.nix` thin; put logic in `package.nix`.
 - One package per folder; modules end with `.nix` and expose options under clear namespaces (e.g., `programs.osgrep`).
+- package's name should usually follow their executable name:
+  - e.g. when something exposes an excutable as `ruv-swarm` then `pname = "ruv-swarm";` at `./packages/ruv-swarm`
 
 ## Testing Guidelines
 
 - No dedicated unit test framework. Validate by building:
   - `nix build .#<name>` for packages
   - For modules, smoke‑test in a throwaway HM/NixOS config.
-- Keep derivations reproducible; avoid network access at build time.
+- Keep derivations reproducible. avoid "latest" tags and URLs.
+- do not spam read BashOutput. if it failed at least 3 times, ask the user for what to do next.
 
 ## Commit & Pull Request Guidelines
 

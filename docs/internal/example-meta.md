@@ -12,7 +12,7 @@ stdenv.mkDerivation {
 
   meta = with lib; {
     # Required
-    description = "A CLI tool that does something useful";
+    description = "A CLI tool that does something useful"; # copy GitHub's About if appropriate
     license = licenses.mit; # omit if upstream doesn't specify
     mainProgram = "my-cli"; # required for executables
 
