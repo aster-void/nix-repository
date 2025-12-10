@@ -28,7 +28,7 @@ jobs:
           if [ -n "${{ inputs.package }}" ]; then
             echo 'packages=["${{ inputs.package }}"]' >> "$GITHUB_OUTPUT"
           else
-            echo "packages=$(cat packages.json)" >> "$GITHUB_OUTPUT"
+            echo "packages=$(jq -c . packages.json)" >> "$GITHUB_OUTPUT"
           fi
 
   update:
