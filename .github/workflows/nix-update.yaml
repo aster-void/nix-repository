@@ -61,22 +61,8 @@ jobs:
         id: update
         run: nix develop -c ./scripts/update-package.sh "${{ matrix.package }}"
 
-      - name: Check format
-        if: steps.update.outputs.updated == 'true'
-        run: nix fmt -- --fail-on-change
-
-      - name: Build package
-        if: steps.update.outputs.updated == 'true'
-        run: nix build .#${{ matrix.package }} --print-build-logs
-
-      - name: Run check script
-        if: steps.update.outputs.updated == 'true'
-        run: |
-          if [ -x "./packages/${{ matrix.package }}/check.sh" ]; then
-            ./packages/${{ matrix.package }}/check.sh
-          fi
-
       - name: Create Pull Request
+        id: create-pr
         if: steps.update.outputs.updated == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
@@ -96,3 +82,57 @@ jobs:
           labels: |
             automated
             update
+
+      - name: Check format
+        id: check-format
+        if: steps.update.outputs.updated == 'true'
+        continue-on-error: true
+        run: nix fmt -- --fail-on-change
+
+      - name: Build package
+        id: build
+        if: steps.update.outputs.updated == 'true'
+        continue-on-error: true
+        run: nix build .#${{ matrix.package }} --print-build-logs
+
+      - name: Run check script
+        id: check-script
+        if: steps.update.outputs.updated == 'true'
+        continue-on-error: true
+        run: |
+          if [ -x "./packages/${{ matrix.package }}/check.sh" ]; then
+            ./packages/${{ matrix.package }}/check.sh
+          fi
+
+      - name: Report check results
+        if: steps.update.outputs.updated == 'true' && steps.create-pr.outputs.pull-request-number
+        run: |
+          PR_NUMBER="${{ steps.create-pr.outputs.pull-request-number }}"
+          FORMAT_RESULT="${{ steps.check-format.outcome }}"
+          BUILD_RESULT="${{ steps.build.outcome }}"
+          CHECK_RESULT="${{ steps.check-script.outcome }}"
+
+          if [ "$FORMAT_RESULT" = "success" ] && [ "$BUILD_RESULT" = "success" ] && [ "$CHECK_RESULT" = "success" ]; then
+            gh pr edit "$PR_NUMBER" --add-label "checks-passed"
+            gh pr comment "$PR_NUMBER" --body "✅ All checks passed"
+          else
+            gh pr edit "$PR_NUMBER" --add-label "checks-failed"
+            COMMENT="## ❌ Some checks failed\n\n"
+            COMMENT+="| Check | Result |\n|---|---|\n"
+            COMMENT+="| Format | $FORMAT_RESULT |\n"
+            COMMENT+="| Build | $BUILD_RESULT |\n"
+            COMMENT+="| Check script | $CHECK_RESULT |\n"
+            echo -e "$COMMENT" | gh pr comment "$PR_NUMBER" --body-file -
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fail if checks failed
+        if: steps.update.outputs.updated == 'true'
+        run: |
+          if [ "${{ steps.check-format.outcome }}" != "success" ] || \
+             [ "${{ steps.build.outcome }}" != "success" ] || \
+             [ "${{ steps.check-script.outcome }}" != "success" ]; then
+            echo "One or more checks failed"
+            exit 1
+          fi
