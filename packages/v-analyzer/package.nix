@@ -7,7 +7,7 @@
 }:
 stdenv.mkDerivation rec {
   pname = "v-analyzer";
-  version = "0.0.6-unstable-2025-01-14";
+  version = "0.0.6";
 
   src = fetchFromGitHub {
     owner = "vlang";
