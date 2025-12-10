@@ -123,3 +123,44 @@ Options:
 
 - `update.sh` - custom update script (when `method: "custom"`)
 - `check.sh` - post-build verification (runs after successful build)
+
+## JavaScript Package Size Optimization
+
+To reduce package size, use `bun build --minify` to bundle JS/TS into a single file:
+
+### For packages WITHOUT native modules
+
+```nix
+buildPhase = ''
+  bun build src/index.ts --outfile build/app.js --target node --minify
+'';
+
+installPhase = ''
+  mkdir -p $out/share/<name> $out/bin
+  cp build/app.js $out/share/<name>/
+  makeWrapper ${lib.getExe nodejs} $out/bin/<name> \
+    --add-flags "$out/share/<name>/app.js"
+'';
+```
+
+Use `--target bun` if the package can run on bun runtime (smaller closure).
+
+### For packages WITH native modules (better-sqlite3, duckdb, etc.)
+
+Native modules cannot be bundled. Instead, clean up node_modules:
+
+```nix
+installPhase = ''
+  cp -r node_modules $out/libexec/<name>/
+
+  # Clean up to reduce size
+  find $out/libexec/<name>/node_modules -type d -name obj.target -prune -exec rm -rf {} +
+  find $out/libexec/<name>/node_modules -name '*.o' -delete
+  find $out/libexec/<name>/node_modules -name '*.a' -delete
+  find $out/libexec/<name>/node_modules -type d -name 'test' -prune -exec rm -rf {} +
+  find $out/libexec/<name>/node_modules -type d -name 'tests' -prune -exec rm -rf {} +
+  find $out/libexec/<name>/node_modules -type d -name 'docs' -prune -exec rm -rf {} +
+  find $out/libexec/<name>/node_modules -name '*.md' -delete
+  find $out/libexec/<name>/node_modules -name '*.map' -delete
+'';
+```

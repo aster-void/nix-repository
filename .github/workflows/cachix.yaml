@@ -51,19 +51,12 @@ jobs:
       - name: Build ${{ matrix.package }}
         if: github.event_name == 'workflow_dispatch' || steps.filter.outputs.build == 'true'
         run: nix build .#${{ matrix.package }} --print-build-logs
-      - name: Push to Cachix (if under 50MB)
+      - name: Push to Cachix
         if: github.event_name == 'workflow_dispatch' || steps.filter.outputs.build == 'true'
         run: |
           set -euo pipefail
-          MAX_SIZE=$((50 * 1024 * 1024))  # 50MB in bytes
           STORE_PATH=$(nix path-info .#${{ matrix.package }})
-          # Get NAR size of package itself (not closure) - lowercase -s
           PKG_SIZE=$(nix path-info -s "$STORE_PATH" | awk '{print $2}')
           echo "Package: ${{ matrix.package }}"
           echo "Package NAR size: $((PKG_SIZE / 1024 / 1024))MB ($PKG_SIZE bytes)"
-          if [ "$PKG_SIZE" -le "$MAX_SIZE" ]; then
-            echo "✓ Under 50MB limit, pushing to cachix..."
-            cachix push nix-repository--aster-void "$STORE_PATH"
-          else
-            echo "✗ Exceeds 50MB limit, skipping cachix push"
-          fi
+          cachix push nix-repository--aster-void "$STORE_PATH"

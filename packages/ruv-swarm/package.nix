@@ -80,6 +80,18 @@ stdenv.mkDerivation (finalAttrs: {
         mkdir -p $out/libexec/ruv-swarm $out/bin
         cp -r bin src node_modules package.json $out/libexec/ruv-swarm/
 
+        # Clean up node_modules to reduce size
+        find $out/libexec/ruv-swarm/node_modules -type d -name obj.target -prune -exec rm -rf {} +
+        find $out/libexec/ruv-swarm/node_modules -name '*.o' -delete
+        find $out/libexec/ruv-swarm/node_modules -name '*.a' -delete
+        find $out/libexec/ruv-swarm/node_modules -type d -name 'test' -prune -exec rm -rf {} +
+        find $out/libexec/ruv-swarm/node_modules -type d -name 'tests' -prune -exec rm -rf {} +
+        find $out/libexec/ruv-swarm/node_modules -type d -name '__tests__' -prune -exec rm -rf {} +
+        find $out/libexec/ruv-swarm/node_modules -type d -name 'docs' -prune -exec rm -rf {} +
+        find $out/libexec/ruv-swarm/node_modules -name '*.md' -delete
+        find $out/libexec/ruv-swarm/node_modules -name '*.map' -delete
+        find $out/libexec/ruv-swarm/node_modules -name '*.ts' ! -name '*.d.ts' -delete
+
         cat > $out/bin/ruv-swarm << 'EOF'
     #!/usr/bin/env bash
     export RUV_SWARM_DATA_DIR="''${RUV_SWARM_DATA_DIR:-''${XDG_DATA_HOME:-$HOME/.local/share}/ruv-swarm}"
