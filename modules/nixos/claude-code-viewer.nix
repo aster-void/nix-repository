@@ -51,6 +51,12 @@ in {
       description = "Whether to open the firewall for the claude-code-viewer port";
     };
 
+    claudeCode = lib.mkOption {
+      type = lib.types.str;
+      default = lib.getExe pkgs.claude-code;
+      description = "Path to Claude Code CLI executable";
+    };
+
     passwordFile = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
@@ -68,18 +74,22 @@ in {
       wantedBy = ["multi-user.target"];
       after = ["network.target"];
 
-      environment = {
-        PORT = toString cfg.port;
-        HOST = cfg.host;
-        NODE_ENV = "production";
-      };
+      environment =
+        {
+          PORT = toString cfg.port;
+          HOST = cfg.host;
+          NODE_ENV = "production";
+        }
+        // {
+          CLAUDE_CODE_VIEWER_CC_EXECUTABLE_PATH = cfg.claudeCode;
+        };
 
       serviceConfig =
         {
           Type = "simple";
           User = cfg.user;
           Group = cfg.group;
-          Restart = "on-failure";
+          Restart = "always";
           RestartSec = 5;
 
           # Hardening - allow reading home directory for Claude Code session data

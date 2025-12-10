@@ -50,6 +50,7 @@ A systemd service module for running claude-code-viewer as a background service.
 | `user`         | string       | (required)            | User account to run the service. Should be your regular user so it can access Claude Code session data |
 | `group`        | string       | `"users"`             | Group under which the service runs                                                                     |
 | `openFirewall` | bool         | `false`               | Whether to open the firewall for the port                                                              |
+| `claudeCode`   | string       | `pkgs.claude-code`    | Path to Claude Code CLI executable                                                                     |
 | `passwordFile` | path or null | `null`                | Path to a file containing the authentication password                                                  |
 
 ### Example with Authentication (agenix)
