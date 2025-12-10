@@ -61,6 +61,10 @@ jobs:
         id: update
         run: nix develop -c ./scripts/update-package.sh "${{ matrix.package }}"
 
+      - name: Check format
+        if: steps.update.outputs.updated == 'true'
+        run: nix fmt -- --fail-on-change
+
       - name: Create Pull Request
         if: steps.update.outputs.updated == 'true'
         uses: peter-evans/create-pull-request@v7
