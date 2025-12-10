@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - id: set-matrix
-        run: echo "packages=$(cat packages.json)" >> "$GITHUB_OUTPUT"
+        run: echo "packages=$(jq -c . packages.json)" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build ${{ matrix.package }}

@@ -1,3 +1,4 @@
-{pkgs}: pkgs.callPackage ./package.nix {
+{pkgs}:
+pkgs.callPackage ./package.nix {
   pnpm = pkgs.pnpm_10;
 }
