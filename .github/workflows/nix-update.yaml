@@ -65,6 +65,17 @@ jobs:
         if: steps.update.outputs.updated == 'true'
         run: nix fmt -- --fail-on-change
 
+      - name: Build package
+        if: steps.update.outputs.updated == 'true'
+        run: nix build .#${{ matrix.package }} --print-build-logs
+
+      - name: Run check script
+        if: steps.update.outputs.updated == 'true'
+        run: |
+          if [ -x "./packages/${{ matrix.package }}/check.sh" ]; then
+            ./packages/${{ matrix.package }}/check.sh
+          fi
+
       - name: Create Pull Request
         if: steps.update.outputs.updated == 'true'
         uses: peter-evans/create-pull-request@v7
