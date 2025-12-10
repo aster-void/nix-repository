@@ -1,54 +1,32 @@
 {
   lib,
-  writeShellApplication,
+  stdenvNoCC,
+  fetchFromGitHub,
+  makeWrapper,
   ghq,
   fzf,
   zellij,
   ripgrep,
 }:
-writeShellApplication {
-  name = "zz";
+stdenvNoCC.mkDerivation {
+  pname = "zz";
+  version = "0.1.0";
 
-  runtimeInputs = [
-    ghq
-    fzf
-    zellij
-    ripgrep
-  ];
+  src = fetchFromGitHub {
+    owner = "aster-void";
+    repo = "zz";
+    rev = "2db65e9c91aa4ce2e753a5894f947eef1bea88e5";
+    hash = "sha256-qH4q/833N+K5z6JPCatoTDKwQ4MLtu3Jqz1e2kbgwdg=";
+  };
 
-  text = ''
-    # Fuzzy-find ghq repo and attach/create zellij session
+  nativeBuildInputs = [makeWrapper];
 
-    if [[ "''${1:-}" == "--help" || "''${1:-}" == "-h" ]]; then
-        echo "Usage: zz [query]"
-        echo ""
-        echo "Fuzzy-find ghq repo and attach/create zellij session"
-        echo ""
-        echo "Options:"
-        echo "  -h, --help    Show this help message"
-        echo ""
-        echo "Arguments:"
-        echo "  query         Initial query for fzf filtering"
-        exit 0
-    fi
-
-    if [[ $# -gt 0 ]]; then
-        repo=$(ghq list | fzf --filter "$*" | head -n 1)
-        [[ -z "$repo" ]] && echo "No match found for: $*" >&2 && exit 1
-    else
-        repo=$(ghq list | fzf)
-        [[ -z "$repo" ]] && exit 1
-    fi
-
-    repo_path="$(ghq root)/$repo"
-    session_name=$(basename "$repo")
-
-    # Check if session exists
-    if zellij list-sessions -s 2>/dev/null | rg -qx "$session_name"; then
-        zellij attach "$session_name"
-    else
-        zellij -s "$session_name" options --default-cwd "$repo_path"
-    fi
+  installPhase = ''
+    runHook preInstall
+    install -Dm755 zz.sh $out/bin/zz
+    wrapProgram $out/bin/zz \
+      --prefix PATH : ${lib.makeBinPath [ghq fzf zellij ripgrep]}
+    runHook postInstall
   '';
 
   meta = {
