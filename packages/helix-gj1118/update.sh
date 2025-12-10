@@ -34,3 +34,7 @@ echo "Formatting with nix fmt..."
 nix fmt "$PACKAGE_FILE" 2>/dev/null || true
 
 echo "Updated helix-gj1118 from $CURRENT_REV to $LATEST_REV"
+
+# Commit the change
+git add "$PACKAGE_FILE"
+git commit -m "packages/helix-gj1118: ${CURRENT_REV:0:7} -> ${LATEST_REV:0:7}"
