@@ -15,5 +15,6 @@
   "osgrep",
   "rust-analyzer-mcp",
   "ruv-swarm",
-  "v-analyzer"
+  "v-analyzer",
+  "zz"
 ]
