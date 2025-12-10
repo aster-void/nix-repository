@@ -4,6 +4,7 @@
   fetchFromGitHub,
   nodejs,
   pnpm,
+  jq,
   makeBinaryWrapper,
 }:
 stdenv.mkDerivation (finalAttrs: {
@@ -14,13 +15,19 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "d-kimuson";
     repo = "claude-code-viewer";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-i2CwTyO4uf7HZH9G704E5pcCdZpLQdPQlkB+zJUZ59c=";
+    hash = "sha256-xDEDrmQJXoru+/oPQuHXBBvS9/iFCq6f9mbacWCpchQ=";
   };
 
+  # Remove packageManager field to prevent pnpm from trying to switch versions via corepack
+  postPatch = ''
+    ${lib.getExe jq} 'del(.packageManager)' package.json > package.json.tmp
+    mv package.json.tmp package.json
+  '';
+
   pnpmDeps = pnpm.fetchDeps {
-    inherit (finalAttrs) pname version src;
-    # Run `nix build .#claude-code-viewer` to get the correct hash
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    inherit (finalAttrs) pname version src postPatch;
+    fetcherVersion = 2;
+    hash = "sha256-fYOQCpsxEiWHNEcYzpfg12Tz2UUF4YfCVmffTdJ0Ky4=";
   };
 
   nativeBuildInputs = [
