@@ -44,7 +44,7 @@ fi
 echo "Correct hash: $CORRECT_HASH"
 
 # Update hash
-sed -i "s/hash = \"\"/hash = \"$CORRECT_HASH\"/" "$PACKAGE_FILE"
+sed -i "s|hash = \"\"|hash = \"$CORRECT_HASH\"|" "$PACKAGE_FILE"
 
 nix fmt "$PACKAGE_FILE" 2>/dev/null || true
 
