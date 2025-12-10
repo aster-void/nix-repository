@@ -37,7 +37,7 @@ in
     buildPhase = ''
       runHook preBuild
 
-      bun build apps/mcp/src/index.ts --outfile build/index.js --target bun
+      bun build apps/mcp/src/index.ts --outfile build/index.js --target bun --minify
 
       runHook postBuild
     '';
@@ -48,7 +48,7 @@ in
       mkdir -p $out $out/bin $out/share/ccusage-mcp
 
       cp ./build/index.js $out/share/ccusage-mcp/app.js
-      makeWrapper ${lib.getExe nodejs} $out/bin/ccusage-mcp --add-flags "$out/share/ccusage-mcp/app.js"
+      makeWrapper ${lib.getExe bun} $out/bin/ccusage-mcp --add-flags "$out/share/ccusage-mcp/app.js"
 
       runHook postInstall
     '';

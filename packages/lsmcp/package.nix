@@ -4,6 +4,7 @@
   fetchFromGitHub,
   nodejs,
   pnpm,
+  bun,
   makeBinaryWrapper,
 }: let
   version = "0.9.4";
@@ -29,6 +30,7 @@ in
       nodejs
       pnpm
       pnpm.configHook
+      bun
       makeBinaryWrapper
     ];
 
@@ -37,7 +39,7 @@ in
     buildPhase = ''
       runHook preBuild
 
-      pnpm run build
+      bun build src/cli/lsmcp.ts --outfile build/lsmcp.js --target node --minify
 
       runHook postBuild
     '';
@@ -45,15 +47,13 @@ in
     installPhase = ''
       runHook preInstall
 
-      installRoot=$out/libexec/lsmcp
-      mkdir -p "$installRoot" $out/bin
+      mkdir -p $out/share/lsmcp $out/bin
 
-      cp package.json pnpm-lock.yaml README.md LICENSE lsmcp.schema.json "$installRoot"
-      cp -r dist node_modules "$installRoot"
+      cp build/lsmcp.js $out/share/lsmcp/app.js
+      cp lsmcp.schema.json $out/share/lsmcp/
 
       makeWrapper ${lib.getExe nodejs} "$out/bin/lsmcp" \
-        --add-flags "$installRoot/dist/lsmcp.js" \
-        --set NODE_ENV production
+        --add-flags "$out/share/lsmcp/app.js"
 
       runHook postInstall
     '';
