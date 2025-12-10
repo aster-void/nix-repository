@@ -52,14 +52,16 @@ A systemd service module for running claude-code-viewer as a background service.
 | `openFirewall` | bool         | `false`               | Whether to open the firewall for the port                                                              |
 | `passwordFile` | path or null | `null`                | Path to a file containing the authentication password                                                  |
 
-### Example with Authentication
+### Example with Authentication (agenix)
 
 ```nix
-{ inputs, ... }:
+{ inputs, config, ... }:
 {
   imports = [
     inputs.nix-repository.nixosModules.claude-code-viewer
   ];
+
+  age.secrets.claude-code-viewer-password.file = ./secrets/claude-code-viewer-password.age;
 
   services.claude-code-viewer = {
     enable = true;
@@ -67,7 +69,7 @@ A systemd service module for running claude-code-viewer as a background service.
     port = 8080;
     host = "*";  # Listen on all interfaces (IPv4/IPv6)
     openFirewall = true;
-    passwordFile = "/run/secrets/claude-code-viewer-password";
+    passwordFile = config.age.secrets.claude-code-viewer-password.path;
   };
 }
 ```
