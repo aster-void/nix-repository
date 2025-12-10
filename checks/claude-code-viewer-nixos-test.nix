@@ -20,7 +20,7 @@ pkgs.testers.nixosTest {
       enable = true;
       user = "testuser";
       port = 3400;
-      host = "127.0.0.1";
+      host = "localhost";
     };
   };
 
@@ -40,7 +40,7 @@ pkgs.testers.nixosTest {
       enable = true;
       user = "testuser";
       port = 3400;
-      host = "0.0.0.0";
+      host = "*";
       openFirewall = true;
       passwordFile = "/etc/claude-code-viewer-password";
     };
@@ -67,17 +67,17 @@ pkgs.testers.nixosTest {
 
     # Test localhost-only configuration
     local.wait_for_unit("claude-code-viewer.service")
-    local.wait_until_succeeds("curl -sf http://127.0.0.1:3400/")
+    local.wait_until_succeeds("curl -sf http://localhost:3400/")
 
     # Test public server with password
     server.wait_for_unit("claude-code-viewer.service")
-    server.wait_until_succeeds("curl -sf http://127.0.0.1:3400/")
+    server.wait_until_succeeds("curl -sf http://localhost:3400/")
 
     # Test that unauthenticated API request is rejected (401)
-    server.succeed("curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3400/api/projects | grep -q 401")
+    server.succeed("curl -s -o /dev/null -w '%{http_code}' http://localhost:3400/api/projects | grep -q 401")
 
     # Test that authenticated API request succeeds
-    server.succeed(f"curl -sf -H 'Cookie: {session_cookie}' http://127.0.0.1:3400/api/projects")
+    server.succeed(f"curl -sf -H 'Cookie: {session_cookie}' http://localhost:3400/api/projects")
 
     # Test that server is accessible from local node (cross-node, tests openFirewall)
     local.wait_until_succeeds("curl -sf http://server:3400/")
@@ -88,7 +88,7 @@ pkgs.testers.nixosTest {
     # Test that authenticated API request from remote succeeds
     local.succeed(f"curl -sf -H 'Cookie: {session_cookie}' http://server:3400/api/projects")
 
-    # Test that local (bound to 127.0.0.1) is NOT accessible from server
+    # Test that local (bound to localhost) is NOT accessible from server
     server.fail("curl -sf --connect-timeout 2 http://local:3400/")
   '';
 }
