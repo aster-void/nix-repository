@@ -91,6 +91,10 @@ async function main(): Promise<void> {
   const oldVersion = await getVersion(packageName);
   console.log(`Current version: ${oldVersion}`);
 
+  // Get current HEAD before update
+  const { output: headBefore } = await run(["git", "rev-parse", "HEAD"]);
+  const oldHead = headBefore.trim();
+
   // Run update
   const updateSuccess = hasCustomUpdate
     ? await runPassthrough([updateScript])
@@ -104,10 +108,15 @@ async function main(): Promise<void> {
   // Stage changes so nix flake can see updated files
   await run(["git", "add", "-A"]);
 
+  // Get HEAD after update
+  const { output: headAfter } = await run(["git", "rev-parse", "HEAD"]);
+  const newHead = headAfter.trim();
+
   const newVersion = await getVersion(packageName);
   console.log(`New version: ${newVersion}`);
 
-  if (oldVersion !== newVersion) {
+  // Check if update created a new commit
+  if (oldHead !== newHead) {
     output("updated", "true");
     output("old_version", oldVersion);
     output("new_version", newVersion);
