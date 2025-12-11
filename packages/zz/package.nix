@@ -8,9 +8,9 @@
   zellij,
   ripgrep,
 }:
-stdenvNoCC.mkDerivation {
+stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "zz";
-  version = "0.1.0";
+  version = "0-unstable-${lib.substring 0 7 finalAttrs.src.rev}";
 
   src = fetchFromGitHub {
     owner = "aster-void";
@@ -36,4 +36,4 @@ stdenvNoCC.mkDerivation {
     maintainers = [];
     mainProgram = "zz";
   };
-}
+})
