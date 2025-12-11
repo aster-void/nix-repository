@@ -10,7 +10,7 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "zz";
-  version = "0-unstable-${lib.substring 0 7 finalAttrs.src.rev}";
+  version = "${lib.substring 0 7 finalAttrs.src.rev}";
 
   src = fetchFromGitHub {
     owner = "aster-void";
