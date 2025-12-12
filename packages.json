@@ -1,11 +1,13 @@
 [
   "cargo-compete",
+  "ccmanager",
   "ccusage",
   "ccusage-codex",
   "ccusage-mcp",
   "chrome-devtools-mcp",
   "claude-code-usage-monitor",
   "claude-flow",
+  "claude-squad",
   "git-gtr",
   "gwq",
   "happy-coder",
