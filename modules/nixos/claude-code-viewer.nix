@@ -51,10 +51,21 @@ in {
       description = "Whether to open the firewall for the claude-code-viewer port";
     };
 
-    claudeCode = lib.mkOption {
-      type = lib.types.str;
-      default = lib.getExe pkgs.claude-code;
-      description = "Path to Claude Code CLI executable";
+    claudeCode.package = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.claude-code;
+      description = "The Claude Code package to use";
+    };
+
+    extraEnv = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      default = {};
+      example = {
+        ANTHROPIC_API_KEY = "sk-...";
+      };
+      description = ''
+        Extra environment variables for claude-code-viewer service.
+      '';
     };
 
     passwordFile = lib.mkOption {
@@ -81,8 +92,9 @@ in {
           NODE_ENV = "production";
         }
         // {
-          CLAUDE_CODE_VIEWER_CC_EXECUTABLE_PATH = cfg.claudeCode;
-        };
+          CLAUDE_CODE_VIEWER_CC_EXECUTABLE_PATH = lib.getExe cfg.claudeCode.package;
+        }
+        // cfg.extraEnv;
 
       serviceConfig =
         {
