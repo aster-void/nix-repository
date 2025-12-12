@@ -22,7 +22,7 @@ yarn2nix-moretea.mkYarnPackage {
 
   # Patch to also check PATH for claude (for nix-installed claude)
   postConfigure = ''
-        cat >> deps/happy-coder/scripts/claude_version_utils.cjs << 'PATCH'
+    cat >> deps/happy-coder/scripts/claude_version_utils.cjs << 'PATCH'
 
     // Nix patch: check PATH for claude first
     const _origGetClaudeCliPath = module.exports.getClaudeCliPath;
