@@ -3,14 +3,14 @@
   rustPlatform,
   fetchFromGitHub,
 }:
-rustPlatform.buildRustPackage rec {
+rustPlatform.buildRustPackage (finalAttrs: {
   pname = "rust-analyzer-mcp";
   version = "0.2.0";
 
   src = fetchFromGitHub {
     owner = "zeenix";
     repo = "rust-analyzer-mcp";
-    rev = "v${version}";
+    rev = "v${finalAttrs.version}";
     hash = "sha256-brnzVDPBB3sfM+5wDw74WGqN5ahtuV4OvaGhnQfDqM0=";
   };
 
@@ -30,4 +30,4 @@ rustPlatform.buildRustPackage rec {
     maintainers = [];
     mainProgram = "rust-analyzer-mcp";
   };
-}
+})

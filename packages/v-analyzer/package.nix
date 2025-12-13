@@ -5,7 +5,7 @@
   vlang,
   git,
 }:
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "v-analyzer";
   version = "0.0.6";
 
@@ -53,10 +53,10 @@ stdenv.mkDerivation rec {
       and semantic syntax highlighting.
     '';
     homepage = "https://github.com/vlang/v-analyzer";
-    changelog = "https://github.com/vlang/v-analyzer/releases/tag/${version}";
+    changelog = "https://github.com/vlang/v-analyzer/releases/tag/${finalAttrs.version}";
     license = lib.licenses.mit;
     maintainers = [];
     platforms = lib.platforms.unix;
     mainProgram = "v-analyzer";
   };
-}
+})

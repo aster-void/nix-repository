@@ -3,14 +3,14 @@
   buildGoModule,
   fetchFromGitHub,
 }:
-buildGoModule rec {
+buildGoModule (finalAttrs: {
   pname = "mcptools";
   version = "0.7.1";
 
   src = fetchFromGitHub {
     owner = "f";
     repo = "mcptools";
-    rev = "v${version}";
+    rev = "v${finalAttrs.version}";
     hash = "sha256-UFK57MzsxoLdtdFhhQ+x57LomyOBijxyHkOCgj6NuJI=";
   };
 
@@ -30,4 +30,4 @@ buildGoModule rec {
     maintainers = [];
     mainProgram = "mcptools";
   };
-}
+})
