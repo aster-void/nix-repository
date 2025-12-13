@@ -7,7 +7,7 @@
   lib,
   bun,
 }: let
-  version = "17.1.8";
+  version = "17.2.0";
 in
   stdenv.mkDerivation (finalAttrs: {
     pname = "ccusage-codex";
@@ -17,13 +17,13 @@ in
       owner = "ryoppippi";
       repo = "ccusage";
       tag = "v${version}";
-      hash = "sha256-FFf3jHvsf+fwaTUxPNuiQ9pcKznwp6Ps5nXqQEXpj5Y=";
+      hash = "sha256-3EHiNPQlvLQgkFRSGWhLuo31PVaNBGhpc9pa3VcR5tw=";
     };
 
     pnpmDeps = pnpm.fetchDeps {
       inherit (finalAttrs) pname version src;
       fetcherVersion = 2;
-      hash = "sha256-gzbFBw49KManquZenI2/3QkwHCOJWx7ivqNe58GQdg8=";
+      hash = "sha256-nOHptc1Ov6YTHMcU3HDb2BSdcceWeM2rX+XAKiowOxM=";
     };
 
     nativeBuildInputs = [
