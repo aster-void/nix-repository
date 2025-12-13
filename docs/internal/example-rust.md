@@ -11,14 +11,14 @@
   pkg-config,
   openssl,
 }:
-rustPlatform.buildRustPackage rec {
+rustPlatform.buildRustPackage (finalAttrs: {
   pname = "my-rust-app";
   version = "1.0.0";
 
   src = fetchFromGitHub {
     owner = "owner";
     repo = "my-rust-app";
-    tag = "v${version}";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
 
@@ -39,7 +39,7 @@ rustPlatform.buildRustPackage rec {
     mainProgram = "my-rust-app";
     # see ./example-meta.md for more
   };
-}
+})
 ```
 
 ## Key Attributes
