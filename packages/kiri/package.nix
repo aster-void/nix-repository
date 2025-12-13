@@ -13,7 +13,7 @@
   which,
   runCommand,
 }: let
-  version = "0.18.2";
+  version = "0.20.2";
   pythonEnv = python3.withPackages (ps: with ps; [ps.setuptools ps.distutils]);
   pythonSitePackages = lib.makeSearchPath "lib/python${python3.pythonVersion}/site-packages" (
     with python3.pkgs; [setuptools distutils]
@@ -37,7 +37,7 @@ in
       owner = "CAPHTECH";
       repo = "kiri";
       tag = "v${version}";
-      hash = "sha256-FkMS3rx8qTuCRGFtF/5sfuivw9dEc1+SEFNyCUJ+usE=";
+      hash = "sha256-d0ChBKzL5NTvl5TAFBWp0m+CC1wX0aiJqNbcX34MWZc=";
     };
 
     pnpmDeps = pnpm.fetchDeps {
