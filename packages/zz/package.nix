@@ -7,6 +7,7 @@
   fzf,
   zellij,
   ripgrep,
+  zoxide,
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "zz";
@@ -25,7 +26,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     runHook preInstall
     install -Dm755 zz.sh $out/bin/zz
     wrapProgram $out/bin/zz \
-      --prefix PATH : ${lib.makeBinPath [ghq fzf zellij ripgrep]}
+      --prefix PATH : ${lib.makeBinPath [ghq fzf zellij ripgrep zoxide]}
     runHook postInstall
   '';
 
