@@ -109,7 +109,7 @@ in {
           PORT = toString cfg.port;
           HOST = cfg.host;
           NODE_ENV = "production";
-          SHELL = "/bin/sh";
+          SHELL = lib.getExe pkgs.bashInteractive;
         }
         // {
           CLAUDE_CODE_VIEWER_CC_EXECUTABLE_PATH = lib.getExe wrappedClaude;
