@@ -6,6 +6,18 @@
 }: let
   cfg = config.services.claude-code-viewer;
   claudeCodeViewerPackage = import ../../packages/claude-code-viewer {inherit pkgs;};
+
+  wrappedClaude =
+    if cfg.claudeCode.extraFlags == []
+    then cfg.claudeCode.package
+    else
+      pkgs.runCommand "claude-wrapped" {
+        nativeBuildInputs = [pkgs.makeBinaryWrapper];
+      } ''
+        mkdir -p $out/bin
+        makeBinaryWrapper ${lib.getExe cfg.claudeCode.package} $out/bin/claude \
+          --add-flags ${lib.escapeShellArg (lib.concatStringsSep " " cfg.claudeCode.extraFlags)}
+      '';
 in {
   _class = "nixos";
 
@@ -57,6 +69,13 @@ in {
       description = "The Claude Code package to use";
     };
 
+    claudeCode.extraFlags = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      example = ["--model" "opus"];
+      description = "Extra flags to pass to the Claude Code CLI";
+    };
+
     extraEnv = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
       default = {};
@@ -90,9 +109,10 @@ in {
           PORT = toString cfg.port;
           HOST = cfg.host;
           NODE_ENV = "production";
+          SHELL = "/bin/sh";
         }
         // {
-          CLAUDE_CODE_VIEWER_CC_EXECUTABLE_PATH = lib.getExe cfg.claudeCode.package;
+          CLAUDE_CODE_VIEWER_CC_EXECUTABLE_PATH = lib.getExe wrappedClaude;
         }
         // cfg.extraEnv;
 
