@@ -14,7 +14,7 @@
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "nohrs";
-  version = "0.1.0-unstable-2025-06-13";
+  version = builtins.substring 0 7 finalAttrs.src.rev;
 
   src = fetchFromGitHub {
     owner = "noh-rs";
