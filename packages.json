@@ -16,6 +16,7 @@
   "lsmcp",
   "mcp-language-server",
   "mcptools",
+  "nohrs",
   "osgrep",
   "rust-analyzer-mcp",
   "ruv-swarm",
