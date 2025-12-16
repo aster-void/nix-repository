@@ -16,8 +16,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "aster-void";
     repo = "zz";
-    rev = "e1884ad1fc9d3d6d3727a44a818a21a1749d87f6";
-    hash = "sha256-WSprSMyHIkJuodUBjmpblPTfAccNsXuTtcU9FYAIGAk=";
+    rev = "0ec04edcfdaef0ace7fa3151890210a5484c18ea";
+    hash = "sha256-3vS5vmD3EjO0XhcIFQAgzYuh7Dlf12iqX01MvrIi8BY=";
   };
 
   nativeBuildInputs = [makeWrapper];
