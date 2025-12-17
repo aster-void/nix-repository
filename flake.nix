@@ -10,7 +10,7 @@
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     # External flake packages
-    rollcron.url = "github:aster-void/rollcron";
+    rollcron.url = "github:ut-code/rollcron";
     rollcron.inputs.nixpkgs.follows = "nixpkgs";
     helix-gj1118.url = "github:gj1118/helix";
     helix-gj1118.inputs.nixpkgs.follows = "nixpkgs";

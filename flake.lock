@@ -67,13 +67,13 @@
       "locked": {
         "lastModified": 1765955644,
         "narHash": "sha256-F6GsF9aHOEP6LtEmx2NLl2c2Qb39B7F5FvHGZ1az+Sc=",
-        "owner": "aster-void",
+        "owner": "ut-code",
         "repo": "rollcron",
         "rev": "6bf07b5a87daadc063e2ee4fe42fe94d072fc4d0",
         "type": "github"
       },
       "original": {
-        "owner": "aster-void",
+        "owner": "ut-code",
         "repo": "rollcron",
         "type": "github"
       }
