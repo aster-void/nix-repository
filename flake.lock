@@ -21,6 +21,27 @@
         "type": "github"
       }
     },
+    "helix-gj1118": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1765897669,
+        "narHash": "sha256-Jw5UljqQaBh5RwNzok/dcOgJkZ3IkVUdE/lOtCnpcIg=",
+        "owner": "gj1118",
+        "repo": "helix",
+        "rev": "11749af030b31a041983d6fdd137ed634ca009f3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gj1118",
+        "repo": "helix",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1765186076,
@@ -37,11 +58,54 @@
         "type": "github"
       }
     },
+    "rollcron": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1765955644,
+        "narHash": "sha256-F6GsF9aHOEP6LtEmx2NLl2c2Qb39B7F5FvHGZ1az+Sc=",
+        "owner": "aster-void",
+        "repo": "rollcron",
+        "rev": "6bf07b5a87daadc063e2ee4fe42fe94d072fc4d0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aster-void",
+        "repo": "rollcron",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "blueprint": "blueprint",
+        "helix-gj1118": "helix-gj1118",
         "nixpkgs": "nixpkgs",
+        "rollcron": "rollcron",
         "treefmt-nix": "treefmt-nix"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "helix-gj1118",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1759631821,
+        "narHash": "sha256-V8A1L0FaU/aSXZ1QNJScxC12uP4hANeRBgI4YdhHeRM=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "1d7cbdaad90f8a5255a89a6eddd8af24dc89cafe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "systems": {

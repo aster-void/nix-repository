@@ -1,5 +1,5 @@
 {
-  pkgs,
+  inputs,
   system,
 }:
-pkgs.callPackage ./package.nix {inherit system;}
+inputs.helix-gj1118.packages.${system}.default
