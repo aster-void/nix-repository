@@ -1,28 +1,42 @@
 {
   lib,
-  yarn2nix-moretea,
+  stdenv,
   fetchFromGitHub,
+  fetchYarnDeps,
+  yarnConfigHook,
+  yarnBuildHook,
+  yarnInstallHook,
   nodejs,
   makeBinaryWrapper,
   which,
 }:
-yarn2nix-moretea.mkYarnPackage {
+stdenv.mkDerivation (finalAttrs: {
   pname = "happy-coder";
   version = "0.12.0";
 
   src = fetchFromGitHub {
     owner = "slopus";
     repo = "happy-cli";
-    tag = "v0.12.0";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-Y7BxCr9QuMOQOudUO64W50Ud+J4+95mENlmWYiEbVAQ=";
   };
 
-  nativeBuildInputs = [makeBinaryWrapper];
-  buildInputs = [nodejs];
+  yarnOfflineCache = fetchYarnDeps {
+    yarnLock = finalAttrs.src + "/yarn.lock";
+    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  };
+
+  nativeBuildInputs = [
+    yarnConfigHook
+    yarnBuildHook
+    yarnInstallHook
+    nodejs
+    makeBinaryWrapper
+  ];
 
   # Patch to also check PATH for claude (for nix-installed claude)
   postConfigure = ''
-    cat >> deps/happy-coder/scripts/claude_version_utils.cjs << 'PATCH'
+    cat >> scripts/claude_version_utils.cjs << 'PATCH'
 
     // Nix patch: check PATH for claude first
     const _origGetClaudeCliPath = module.exports.getClaudeCliPath;
@@ -39,12 +53,6 @@ yarn2nix-moretea.mkYarnPackage {
     PATCH
   '';
 
-  buildPhase = ''
-    runHook preBuild
-    yarn --offline build
-    runHook postBuild
-  '';
-
   postInstall = ''
     wrapProgram $out/bin/happy --prefix PATH : ${lib.makeBinPath [nodejs which]}
     wrapProgram $out/bin/happy-mcp --prefix PATH : ${lib.makeBinPath [nodejs which]}
@@ -57,4 +65,4 @@ yarn2nix-moretea.mkYarnPackage {
     maintainers = [];
     mainProgram = "happy";
   };
-}
+})
