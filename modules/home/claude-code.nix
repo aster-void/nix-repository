@@ -6,13 +6,7 @@
 }: let
   cfg = config.programs.claude-code;
 
-  # Resolve path from plugin.json (handles "./path" format)
-  resolvePath = src: path:
-    if lib.hasPrefix "./" path
-    then "${src}/${lib.removePrefix "./" path}"
-    else "${src}/${path}";
-
-  # Collect plugin info (with plugin.json support)
+  # Collect plugin info (using conventional paths only)
   collectPluginInfo = plugin: let
     src =
       if lib.isPath plugin
@@ -28,14 +22,7 @@
       }
       else plugin;
 
-    pluginJsonPath = "${src}/.claude-plugin/plugin.json";
-    hasPluginJson = builtins.pathExists pluginJsonPath;
-    pluginJson =
-      if hasPluginJson
-      then builtins.fromJSON (builtins.readFile pluginJsonPath)
-      else {};
-
-    # Get name: user-provided > plugin.json > directory basename (strip store hash)
+    # Get name: user-provided > directory basename (strip store hash)
     baseName = baseNameOf (toString src);
     # Store paths look like "hash-name", extract just the name
     strippedName = let
@@ -47,18 +34,11 @@
     name =
       if opts.name != null
       then opts.name
-      else if hasPluginJson && pluginJson ? name
-      then pluginJson.name
       else strippedName;
 
-    getPath = key: default:
-      if hasPluginJson && pluginJson ? ${key}
-      then resolvePath src pluginJson.${key}
-      else "${src}/${default}";
-
-    commandsPath = getPath "commands" "commands";
-    agentsPath = getPath "agents" "agents";
-    skillsPath = getPath "skills" "skills";
+    commandsPath = "${src}/commands";
+    agentsPath = "${src}/agents";
+    skillsPath = "${src}/skills";
   in {
     inherit name;
     commands =
@@ -106,7 +86,7 @@
       name = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
-        description = "Plugin name (auto-detected from plugin.json or directory name)";
+        description = "Plugin name (auto-detected from directory name)";
       };
       commands = lib.mkOption {
         type = lib.types.bool;
