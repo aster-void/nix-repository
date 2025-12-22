@@ -22,13 +22,12 @@ in
 
     pnpmDeps = pnpm.fetchDeps {
       inherit (finalAttrs) pname version src;
-      fetcherVersion = 2;
-      hash = "sha256-09gx6IARzFlEG93nOHJWI0dLLZtNXww0K5wHqyvt5sQ=";
+      hash = "sha256-M8wmecD1fZ0LfBjJhi94VBi6+4jhJ/nEFZr1JxwiqEg=";
+      fetcherVersion = 3;
     };
 
     nativeBuildInputs = [
       nodejs
-      pnpm
       pnpm.configHook
       bun
       makeBinaryWrapper
