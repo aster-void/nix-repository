@@ -4,6 +4,8 @@
   fetchFromGitHub,
   nodejs,
   pnpm,
+  pnpmConfigHook,
+  fetchPnpmDeps,
   bun,
   makeBinaryWrapper,
 }: let
@@ -20,7 +22,7 @@ in
       hash = "sha256-paNzTqjB2gE2V1drt4srItUYNUzW/SQMnA9XoRYZ170=";
     };
 
-    pnpmDeps = pnpm.fetchDeps {
+    pnpmDeps = fetchPnpmDeps {
       inherit (finalAttrs) pname version src;
       hash = "sha256-M8wmecD1fZ0LfBjJhi94VBi6+4jhJ/nEFZr1JxwiqEg=";
       fetcherVersion = 3;
@@ -28,7 +30,8 @@ in
 
     nativeBuildInputs = [
       nodejs
-      pnpm.configHook
+      pnpm
+      pnpmConfigHook
       bun
       makeBinaryWrapper
     ];

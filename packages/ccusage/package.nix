@@ -2,6 +2,7 @@
   stdenv,
   nodejs,
   fetchFromGitHub,
+  pnpm,
   pnpmConfigHook,
   fetchPnpmDeps,
   bun,
@@ -29,6 +30,7 @@ in
 
     nativeBuildInputs = [
       nodejs
+      pnpm
       pnpmConfigHook
       bun
       makeBinaryWrapper

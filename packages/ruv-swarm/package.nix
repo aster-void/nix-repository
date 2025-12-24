@@ -4,6 +4,8 @@
   fetchFromGitHub,
   nodejs,
   pnpm,
+  pnpmConfigHook,
+  fetchPnpmDeps,
   python3,
   jq,
   pkg-config,
@@ -21,7 +23,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   sourceRoot = "${finalAttrs.src.name}/ruv-swarm/npm";
 
-  pnpmDeps = pnpm.fetchDeps {
+  pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src sourceRoot;
     fetcherVersion = 2;
     hash = "sha256-fBNtHtFj7tYWF8mnIEGN5q66GMd9546WkFC54yFULp0=";
@@ -36,7 +38,7 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     nodejs
     pnpm
-    pnpm.configHook
+    pnpmConfigHook
     (python3.withPackages (ps: [ps.setuptools])) # for better-sqlite3 node-gyp
     pkg-config
   ];
