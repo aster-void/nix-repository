@@ -14,8 +14,8 @@
   osgrep = import ./packages/osgrep {inherit pkgs;};
   v-analyzer = import ./packages/v-analyzer {inherit pkgs;};
 
-  modules = {
-    gwq-home = ./modules/home/gwq.nix;
-    osgrep-home = ./modules/home/osgrep.nix;
+  homeModules = {
+    gwq = ./modules/home/gwq.nix;
+    osgrep = ./modules/home/osgrep.nix;
   };
 }
