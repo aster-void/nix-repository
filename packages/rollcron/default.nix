@@ -1,5 +1,5 @@
 {
   inputs,
-  system,
+  pkgs,
 }:
-inputs.rollcron.packages.${system}.default
+inputs.rollcron.packages.${pkgs.stdenv.hostPlatform.system}.default
