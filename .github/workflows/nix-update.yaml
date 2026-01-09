@@ -58,7 +58,7 @@ jobs:
 
       - name: Run update
         id: update
-        run: nix develop -c ./scripts/update-package.sh "${{ matrix.package }}"
+        run: nix-shell --run "./scripts/update-package.sh '${{ matrix.package }}'"
 
       - name: Check format
         if: steps.update.outputs.updated == 'true'
