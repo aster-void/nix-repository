@@ -24,7 +24,7 @@
 # No action required, automatically done via .envrc
 
 # Format all files
-nix fmt # uses treefmt
+treefmt
 
 # Build a package
 nix build .#<name> # example: nix build .#osgrep

@@ -6,6 +6,7 @@ pkgs.mkShell {
     pkgs.deno
 
     # formatter
+    pkgs.treefmt
     pkgs.alejandra
     pkgs.prettier
   ];
