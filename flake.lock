@@ -58,32 +58,11 @@
         "type": "github"
       }
     },
-    "rollcron": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1766426045,
-        "narHash": "sha256-3W6Wy0Bvqo7oZOFrRAEIo9ZzAgzNUHzGFMpEvAvy/aY=",
-        "owner": "ut-code",
-        "repo": "rollcron",
-        "rev": "8e735a43613af57613657540c3dd9adf38fa919e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ut-code",
-        "repo": "rollcron",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "blueprint": "blueprint",
         "helix-gj1118": "helix-gj1118",
-        "nixpkgs": "nixpkgs",
-        "rollcron": "rollcron"
+        "nixpkgs": "nixpkgs"
       }
     },
     "rust-overlay": {
