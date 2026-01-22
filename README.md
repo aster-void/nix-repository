@@ -20,6 +20,9 @@ nix build --extra-substituters https://nix-repository--aster-void.cachix.org \
           --extra-trusted-public-keys nix-repository--aster-void.cachix.org-1:A+IaiSvtaGcenevi21IvvODJoO61MtVbLFApMDXQ1Zs=
 ```
 
+> [!WARNING]
+> Overriding nixpkgs (e.g., overlays, `nixpkgs.config`) disables binary cache and forces rebuilds from source.
+
 ## Maintenance Level
 
 I will maintain packages / modules that are listed in `./nur.nix`.
